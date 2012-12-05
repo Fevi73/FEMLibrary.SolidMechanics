@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FEMLibrary.SolidMechanics", "FEMLibrary.SolidMechanics\FEMLibrary.SolidMechanics.csproj", "{81C7844F-2CE4-4757-8401-6742F1BC0C5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FEMLibrary.SolidMechanics.GUI", "FEMLibrary.SolidMechanics.GUI\FEMLibrary.SolidMechanics.GUI.csproj", "{E66F0BAA-038E-4663-80C3-62B2E943BF0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixLibrary", "MatrixProj\MatrixLibrary.csproj", "{B8D3F65F-9110-438B-8747-3FE5059E9A2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FEMLibrary.SolidMechanics.Testing", "FEMLibrary.SolidMechanics.Testing\FEMLibrary.SolidMechanics.Testing.csproj", "{A3D73A9B-D4C4-43D3-9118-4881824E206E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{0047E1D6-0C74-47E6-A264-CEFA051C6F4A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81C7844F-2CE4-4757-8401-6742F1BC0C5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81C7844F-2CE4-4757-8401-6742F1BC0C5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81C7844F-2CE4-4757-8401-6742F1BC0C5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81C7844F-2CE4-4757-8401-6742F1BC0C5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E66F0BAA-038E-4663-80C3-62B2E943BF0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E66F0BAA-038E-4663-80C3-62B2E943BF0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E66F0BAA-038E-4663-80C3-62B2E943BF0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E66F0BAA-038E-4663-80C3-62B2E943BF0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8D3F65F-9110-438B-8747-3FE5059E9A2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8D3F65F-9110-438B-8747-3FE5059E9A2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8D3F65F-9110-438B-8747-3FE5059E9A2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8D3F65F-9110-438B-8747-3FE5059E9A2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3D73A9B-D4C4-43D3-9118-4881824E206E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3D73A9B-D4C4-43D3-9118-4881824E206E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3D73A9B-D4C4-43D3-9118-4881824E206E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3D73A9B-D4C4-43D3-9118-4881824E206E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0047E1D6-0C74-47E6-A264-CEFA051C6F4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0047E1D6-0C74-47E6-A264-CEFA051C6F4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0047E1D6-0C74-47E6-A264-CEFA051C6F4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0047E1D6-0C74-47E6-A264-CEFA051C6F4A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35
+	EndGlobalSection
+EndGlobal

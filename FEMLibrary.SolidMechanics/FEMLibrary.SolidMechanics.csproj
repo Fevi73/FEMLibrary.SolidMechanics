@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{81C7844F-2CE4-4757-8401-6742F1BC0C5E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FEMLibrary.SolidMechanics</RootNamespace>
+    <AssemblyName>FEMLibrary.SolidMechanics</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.2.3.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics.IO">
+      <HintPath>..\packages\MathNet.Numerics.2.3.0\lib\net40\MathNet.Numerics.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="zlib.net">
+      <HintPath>..\packages\zlib.net.1.0.4.0\lib\zlib.net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Geometry\FiniteElementRectangle.cs" />
+    <Compile Include="Geometry\IFiniteElement.cs" />
+    <Compile Include="Geometry\Node.cs" />
+    <Compile Include="Geometry\Rectangle.cs" />
+    <Compile Include="Geometry\Segment.cs" />
+    <Compile Include="Meshing\BoundaryMesh.cs" />
+    <Compile Include="Meshing\BoundaryMeshSettings.cs" />
+    <Compile Include="Meshing\Mesh.cs" />
+    <Compile Include="Meshing\RectangularMesh.cs" />
+    <Compile Include="NumericalUtils\Integration.cs" />
+    <Compile Include="Physics\BoundaryConditions.cs" />
+    <Compile Include="Geometry\LinearEdge.cs" />
+    <Compile Include="Physics\Material.cs" />
+    <Compile Include="Physics\Model.cs" />
+    <Compile Include="Geometry\Point.cs" />
+    <Compile Include="Geometry\Shape.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NumericalUtils\JacobianRectangular.cs" />
+    <Compile Include="Solving\AnaliticalResultRectangleWithOneSideFixed.cs" />
+    <Compile Include="Solving\AnaliticalResultRectangleWithTwoFixedSides.cs" />
+    <Compile Include="Solving\EigenValuesNumericalResult.cs" />
+    <Compile Include="Solving\FreeVibrationsLinearSolver.cs" />
+    <Compile Include="Solving\IResult.cs" />
+    <Compile Include="Solving\StaticNumericalResult.cs" />
+    <Compile Include="Utils\ResultHelper.cs" />
+    <Compile Include="Solving\Solver.cs" />
+    <Compile Include="Solving\StationaryNonlinearSolver.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MatrixProj\MatrixLibrary.csproj">
+      <Project>{B8D3F65F-9110-438B-8747-3FE5059E9A2E}</Project>
+      <Name>MatrixLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utils\Utils.csproj">
+      <Project>{0047E1D6-0C74-47E6-A264-CEFA051C6F4A}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Readme\MathNet.Numerics.authors.txt" />
+    <Content Include="App_Readme\MathNet.Numerics.copyright.txt" />
+    <Content Include="App_Readme\MathNet.Numerics.readme.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

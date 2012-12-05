@@ -1,0 +1,53 @@
+﻿
+<UserControl x:Class="FEMLibrary.SolidMechanics.GUI.Views.SolveStepView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+              xmlns:conv="clr-namespace:FEMLibrary.SolidMechanics.GUI.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <conv:DebugConverter x:Key="Conv"></conv:DebugConverter>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Margin="5">Error</TextBlock>
+        <TextBox Grid.Column="1" Margin="5" Text="{Binding Error, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+        
+        <TextBlock Grid.Column="0" Grid.Row="1" Margin="5">Max iterations</TextBlock>
+        <TextBox Grid.Column="1" Grid.Row="1" Margin="5" Text="{Binding MaxIterations, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+        
+        <TextBlock Grid.Column="0" Grid.Row="2" Margin="5">Max results</TextBlock>
+        <TextBox Grid.Column="1" Grid.Row="2" Margin="5" Text="{Binding MaxResults, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+        
+        <Button Margin="5" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Right" Command="{Binding SolveCommand}">Solve</Button>
+
+        <ListBox Grid.Row="4" Grid.ColumnSpan="2" ItemsSource="{Binding Results, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="Name" SelectedItem="{Binding CurrentResult}" Margin="5,5,3,5"></ListBox>
+
+        <ListView Grid.Row="5" Grid.ColumnSpan="2" ItemsSource="{Binding GridResults}" Margin="5,5,3,5">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Alfa1" DisplayMemberBinding="{Binding Alfa1}"/>
+                        <GridViewColumn Header="U1Numerical" DisplayMemberBinding="{Binding U1Numeric, StringFormat=0.#######}"/>
+                        <!--<GridViewColumn Header="U1Analitical" DisplayMemberBinding="{Binding U1Analitical, StringFormat=0.#######}"/>-->
+                        <GridViewColumn Header="U3Numerical" DisplayMemberBinding="{Binding U3Numeric, StringFormat=0.#######}"/>
+                        <!--<GridViewColumn Header="U3Analitical" DisplayMemberBinding="{Binding U3Analitical, StringFormat=0.#######}"/>-->
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>
