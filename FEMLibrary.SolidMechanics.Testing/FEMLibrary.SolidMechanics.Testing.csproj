@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="alglibnet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="GalaSoft.MvvmLight, Version=3.0.0.20008, Culture=neutral, PublicKeyToken=3e875cdb3903c512, processorArchitecture=MSIL" />
     <Reference Include="GalaSoft.MvvmLight.Extras, Version=3.0.0.20002, Culture=neutral, PublicKeyToken=48c5515dce1bf64d, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />

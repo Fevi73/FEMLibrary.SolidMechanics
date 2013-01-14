@@ -7,6 +7,7 @@ using MatrixLibrary;
 using FEMLibrary.SolidMechanics.Geometry;
 using FEMLibrary.SolidMechanics.NumericalUtils;
 using FEMLibrary.SolidMechanics.Meshing;
+using FEMLibrary.SolidMechanics.Results;
 
 namespace FEMLibrary.SolidMechanics.Solving
 {

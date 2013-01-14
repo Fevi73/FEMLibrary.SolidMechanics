@@ -193,6 +193,30 @@ namespace MatrixLibrary
             return isDiag;
         }
 
+        public Matrix Inverse() { 
+            if (this.IsQuadratic)
+            {
+                int N = this.n;
+                Matrix result = new Matrix(N, N);
+                Matrix U = new Matrix(N, N);
+                Matrix L = new Matrix(N, N);
+                this.GetLUMatrixs(L, U);
+
+                for (int i = 0; i < N; i++)
+                {
+                    Vector b = new Vector(N);
+                    b[i] = 1;
+                    Vector x = LUAlgorithmUsingMatricies(b, N, U, L);
+                    for (int j = 0; j < N; j++) {
+                        result[j, i] = x[j];
+                    }
+                }
+                return result;
+            }
+            else
+                throw new CountException("Matrix is not Quadratic!!!");
+            
+        }
         
         #region - Solving system equation -
 
@@ -237,7 +261,7 @@ namespace MatrixLibrary
                         double sum2 = 0;
                         for (int k = 0; k < i; k++)
                         {
-                            sum2 += L[i, k] * U[k, j];
+                            sum2 += L[j, k] * U[k, i];
                         }
                         L[j, i] = (this[j, i] - sum2) / U[i, i];
 
@@ -261,30 +285,35 @@ namespace MatrixLibrary
 
                 GetLUMatrixs(L, U);
 
-                double[] y = new double[N];
-                for (int i = 0; i < N; i++)
-                {
-                    double sum1 = 0;
-                    for (int k = 0; k < i; k++)
-                    {
-                        sum1 += L[i, k] * y[k];
-                    }
-                    y[i] = b[i] - sum1;
-                }
-
-                Vector x = new Vector(N);
-                for (int i = N - 1; i >= 0; i--)
-                {
-                    double sum2 = 0;
-                    for (int k = N - 1; k > i; k--)
-                    {
-                        sum2 += U[i, k] * x[k];
-                    }
-                    x[i] = (y[i] - sum2) / U[i, i];
-                }
-                return x;
+                return LUAlgorithmUsingMatricies(b, N, U, L);
             }
             else throw new CountException("Matrix is not Quadratic!!!");
+        }
+
+        private static Vector LUAlgorithmUsingMatricies(Vector b, int N, Matrix U, Matrix L)
+        {
+            double[] y = new double[N];
+            for (int i = 0; i < N; i++)
+            {
+                double sum1 = 0;
+                for (int k = 0; k < i; k++)
+                {
+                    sum1 += L[i, k] * y[k];
+                }
+                y[i] = b[i] - sum1;
+            }
+
+            Vector x = new Vector(N);
+            for (int i = N - 1; i >= 0; i--)
+            {
+                double sum2 = 0;
+                for (int k = N - 1; k > i; k--)
+                {
+                    sum2 += U[i, k] * x[k];
+                }
+                x[i] = (y[i] - sum2) / U[i, i];
+            }
+            return x;
         }
         
         #endregion

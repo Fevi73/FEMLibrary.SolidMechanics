@@ -2,6 +2,7 @@
 using FEMLibrary.SolidMechanics.Geometry;
 using MatrixLibrary;
 using FEMLibrary.SolidMechanics.Solving;
+using FEMLibrary.SolidMechanics.Results;
 
 namespace FEMLibrary.SolidMechanics.Utils
 {

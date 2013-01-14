@@ -113,6 +113,41 @@ namespace FEMLibrary.SolidMechanics.Testing
             return m;
         }
 
+        private Matrix Matrix5()
+        {
+            Matrix m = new Matrix(3, 3); 
+            m[0, 0] = 1;
+            m[0, 1] = 3;
+            m[0, 2] = 1;
+
+            m[1, 0] = 1;
+            m[1, 1] = 1;
+            m[1, 2] = 2;
+
+            m[2, 0] = 2;
+            m[2, 1] = 3;
+            m[2, 2] = 4;
+            return m;
+        }
+
+        private Matrix MatrixInverse5()
+        {
+            Matrix m = new Matrix(3, 3);
+            m[0, 0] = 2;
+            m[0, 1] = 9;
+            m[0, 2] = -5;
+
+            m[1, 0] = 0;
+            m[1, 1] = -2;
+            m[1, 2] = 1;
+
+            m[2, 0] = -1;
+            m[2, 1] = -3;
+            m[2, 2] = 2;
+            return m;
+        }
+
+
         [TestMethod()]
         public void TestJacobiAlgorithm()
         {
@@ -172,6 +207,20 @@ namespace FEMLibrary.SolidMechanics.Testing
             Vector expected = lambdas[0] * eigenVectors[0];
             Vector actual = m * eigenVectors[0];
             Assert.IsTrue(Vector.Norm(actual - expected) < eps, "Close enough");
+        }
+
+        /// <summary>
+        ///A test for Inverse
+        ///</summary>
+        [TestMethod()]
+        public void InverseTest()
+        {
+            Matrix target = Matrix5(); // TODO: Initialize to an appropriate value
+            Matrix expected = null; // TODO: Initialize to an appropriate value
+            Matrix actual;
+            actual = target.Inverse();
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
         }
     }
 }

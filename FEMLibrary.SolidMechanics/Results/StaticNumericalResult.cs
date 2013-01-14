@@ -5,7 +5,7 @@ using MatrixLibrary;
 using FEMLibrary.SolidMechanics.Geometry;
 using FEMLibrary.SolidMechanics.NumericalUtils;
 
-namespace FEMLibrary.SolidMechanics.Solving
+namespace FEMLibrary.SolidMechanics.Results
 {
     public class StaticNumericalResult:INumericalResult
     {

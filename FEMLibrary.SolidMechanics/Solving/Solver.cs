@@ -1,6 +1,7 @@
 ﻿using FEMLibrary.SolidMechanics.Meshing;
 using FEMLibrary.SolidMechanics.Physics;
 using System.Collections.Generic;
+using FEMLibrary.SolidMechanics.Results;
 
 namespace FEMLibrary.SolidMechanics.Solving
 {

@@ -221,5 +221,23 @@ namespace MatrixLibrary
             }
             vector = newVector;
         }
+
+        public static Vector Cut(Vector vector, int index)
+        {
+            Vector cuttedVector = new Vector(vector.Length - 1);
+            int displacement = 0;
+            for (int i = 0; i < vector.Length; i++)
+            {
+                if (i != index)
+                {
+                    cuttedVector[i + displacement] = vector[i];
+                }
+                else
+                {
+                    displacement = -1;
+                }
+            }
+            return cuttedVector;
+        }
     }
 }

@@ -2,7 +2,7 @@
 using MatrixLibrary;
 using System.Collections.Generic;
 
-namespace FEMLibrary.SolidMechanics.Solving
+namespace FEMLibrary.SolidMechanics.Results
 {
     public interface IResult
     {

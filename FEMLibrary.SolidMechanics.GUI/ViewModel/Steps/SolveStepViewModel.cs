@@ -14,6 +14,7 @@ using System.Timers;
 using System.Windows.Threading;
 using System.Threading;
 using System.Windows;
+using FEMLibrary.SolidMechanics.Results;
 
 namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 {
@@ -180,17 +181,22 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
             {
                 RectangularMesh mesh = new RectangularMesh(rectangle, _solidMechanicsModel.VerticalElements, _solidMechanicsModel.HorizontalElements);
 
-                Solver solver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
+                Solver initSolver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
+                IEnumerable<INumericalResult> initResults = initSolver.Solve(1);
+                EigenValuesNumericalResult res = initResults.First() as EigenValuesNumericalResult;
+
+                Solver solver = new FreeVibrationsNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 10, 200);
+                //Solver solver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
                 //Solver solver = new StationaryNonlinear2DSolver(_solidMechanicsModel.Model, mesh, _error, 20);
                 //IResult analiticalResult = new AnaliticalResultRectangleWithOneSideFixed(_solidMechanicsModel.Model);
+                IEnumerable<INumericalResult> results = solver.Solve(_maxResults);
+                
                 _pointsForGrid = mesh.GetPointsForResult();
                 Results.Clear();
-                IEnumerable<INumericalResult> results = solver.Solve(_maxResults);
                 foreach (INumericalResult result in results)
                 {
                     Results.Add(result);
                 }
-                
             }
         }
 

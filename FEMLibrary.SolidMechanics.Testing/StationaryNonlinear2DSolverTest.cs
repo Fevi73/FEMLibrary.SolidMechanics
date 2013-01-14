@@ -7,6 +7,7 @@ using FEMLibrary.SolidMechanics.Solving;
 using MatrixLibrary;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FEMLibrary.SolidMechanics.Utils;
+using FEMLibrary.SolidMechanics.Results;
 
 namespace FEMLibrary.SolidMechanics.Testing
 {

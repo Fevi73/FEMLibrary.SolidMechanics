@@ -5,7 +5,7 @@ using MatrixLibrary;
 using FEMLibrary.SolidMechanics.Geometry;
 using FEMLibrary.SolidMechanics.NumericalUtils;
 
-namespace FEMLibrary.SolidMechanics.Solving
+namespace FEMLibrary.SolidMechanics.Results
 {
     public class EigenValuesNumericalResult : INumericalResult
     {
@@ -119,7 +119,7 @@ namespace FEMLibrary.SolidMechanics.Solving
                     };
                 Point pointKsiTeta = ResultHelper.TransformCoordinates(point, element, elementKsiTeta);
                 Matrix finiteElementApproximationMatrix = getFiniteElementApproximationMatrix(pointKsiTeta);
-                result = GetUByElement(element) * (finiteElementApproximationMatrix * Math.Cos(_frequency * t));
+                result = GetUByElement(element) * (finiteElementApproximationMatrix * Math.Sin(_frequency * t));
             }
             return result;
         }

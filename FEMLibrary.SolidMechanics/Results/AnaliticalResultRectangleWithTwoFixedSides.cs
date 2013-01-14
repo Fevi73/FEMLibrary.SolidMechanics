@@ -6,7 +6,7 @@ using FEMLibrary.SolidMechanics.Geometry;
 using FEMLibrary.SolidMechanics.Physics;
 using MatrixLibrary;
 
-namespace FEMLibrary.SolidMechanics.Solving
+namespace FEMLibrary.SolidMechanics.Results
 {
     public class AnaliticalResultRectangleWithTwoFixedSides : IResult
     {
