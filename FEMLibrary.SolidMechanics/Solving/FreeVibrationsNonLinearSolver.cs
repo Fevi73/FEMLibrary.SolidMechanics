@@ -11,6 +11,7 @@ using FEMLibrary.SolidMechanics.Utils;
 using FEMLibrary.SolidMechanics.NumericalUtils;
 using System.Diagnostics;
 using FEMLibrary.SolidMechanics.Results;
+using FEMLibrary.SolidMechanics.ODE;
 
 namespace FEMLibrary.SolidMechanics.Solving
 {
@@ -22,12 +23,12 @@ namespace FEMLibrary.SolidMechanics.Solving
             _error = error;
             _init = init;
             _maxTime = maxTime;
-            _deltaTime = maxTime / intervalsTime;
+            _intervalsTime = intervalsTime;
         }
 
 
         private double _maxTime;
-        private double _deltaTime;
+        private int _intervalsTime;
 
         private Vector _init;
 
@@ -48,8 +49,6 @@ namespace FEMLibrary.SolidMechanics.Solving
             
             if (_mesh.IsMeshGenerated)
             {
-                SemidiscreteVibrationsNumericalResult result = new SemidiscreteVibrationsNumericalResult(_mesh.Elements, _deltaTime);
-
                 GetConstantMatrix();
 
                 Matrix StiffnessMatrix = GetStiffnessMatrix();
@@ -58,18 +57,38 @@ namespace FEMLibrary.SolidMechanics.Solving
                 List<int> indeciesToDelete;
                 GeneralMatrix = AsumeStaticBoundaryConditions(GeneralMatrix, out indeciesToDelete);
 
-                Vector prevV = InitValue();
+                Vector init = InitValue();
 
-                for (double t = _deltaTime; t < _maxTime; t += _deltaTime) {
-                    Vector prevF = GetF(prevV, GeneralMatrix);
-                    Vector V = prevV + _deltaTime / 2 * (GetF(prevV + _deltaTime * prevF, GeneralMatrix) + prevF);
-                    prevV = V;
-                    AddToResult(result, V, indeciesToDelete);
+                //CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.HeunMethodSolve((t,v)=>GetF(v,GeneralMatrix), init, _maxTime, _intervalsTime);
+                //CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.AdamsBashforthMethodsSolve((t, v) => GetF(v, GeneralMatrix), init, _maxTime, _intervalsTime);
+                CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.GirMethodsSolve((t, v) => GetF(v, GeneralMatrix), init, _maxTime, _intervalsTime);
+                
+                SemidiscreteVibrationsNumericalResult result = new SemidiscreteVibrationsNumericalResult(_mesh.Elements, cauchyProblemResult.DeltaTime);
+                foreach (Vector v in cauchyProblemResult.Results) {
+                    AddToResult(result, v, indeciesToDelete);
                 }
 
                 results.Add(result);
             }
             return results;
+        }
+
+        private Vector GetF(Vector v, Matrix GeneralMatrix)
+        {
+            Vector u = GetU(v);
+            Vector u1 = GetU1(v);
+
+            Vector u_derivative = u1;
+            Vector u1_derivative = GeneralMatrix * u;
+
+            return GetV(u_derivative, u1_derivative);
+        }
+
+        private Vector InitValue()
+        {
+            Vector u = AsumeStaticBoundaryConditionsToVector(_init);
+            Vector u1 = new Vector(u.Length);
+            return GetV(u, u1);
         }
 
         private void AddToResult(SemidiscreteVibrationsNumericalResult result, Vector V, List<int> indeciesToDelete)
@@ -99,17 +118,6 @@ namespace FEMLibrary.SolidMechanics.Solving
             return u1;
         }
 
-        private Vector GetF(Vector prevV, Matrix GeneralMatrix)
-        {
-            Vector u = GetU(prevV);
-            Vector u1 = GetU1(prevV);
-
-            Vector u_derivative = u1;
-            Vector u1_derivative = GeneralMatrix * u;
-
-            return GetV(u_derivative, u1_derivative);
-        }
-
         private Vector GetV(Vector u, Vector u1)
         {
             Vector v = new Vector(u.Length + u1.Length);
@@ -123,13 +131,6 @@ namespace FEMLibrary.SolidMechanics.Solving
                 v[u.Length + i] = u1[i];
             }
             return v;
-        }
-
-        private Vector InitValue()
-        {
-            Vector u = AsumeStaticBoundaryConditionsToVector(_init);
-            Vector u1 = new Vector(u.Length);
-            return GetV(u, u1);
         }
 
         #region MassMatrix

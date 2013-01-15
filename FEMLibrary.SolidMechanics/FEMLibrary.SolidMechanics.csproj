@@ -60,6 +60,7 @@
     <Compile Include="Meshing\Mesh.cs" />
     <Compile Include="Meshing\RectangularMesh.cs" />
     <Compile Include="NumericalUtils\Integration.cs" />
+    <Compile Include="ODE\CauchyProblemSolver.cs" />
     <Compile Include="Physics\BoundaryConditions.cs" />
     <Compile Include="Geometry\LinearEdge.cs" />
     <Compile Include="Physics\Material.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="NumericalUtils\JacobianRectangular.cs" />
     <Compile Include="Results\AnaliticalResultRectangleWithOneSideFixed.cs" />
     <Compile Include="Results\AnaliticalResultRectangleWithTwoFixedSides.cs" />
+    <Compile Include="Results\CauchyProblemResult.cs" />
     <Compile Include="Results\SemidiscreteVibrationsNumericalResult.cs" />
     <Compile Include="Results\EigenValuesNumericalResult.cs" />
     <Compile Include="Solving\FreeVibrationsLinearSolver.cs" />

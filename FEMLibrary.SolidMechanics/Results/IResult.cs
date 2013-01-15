@@ -4,10 +4,14 @@ using System.Collections.Generic;
 
 namespace FEMLibrary.SolidMechanics.Results
 {
-    public interface IResult
+    public interface IResult<T>
     {
         string Name { get; }
-        Vector GetResultAtPoint(Point point, double t);
+        T GetResultAtPoint(Point point, double t);
+    }
+
+    public interface IResult : IResult<Vector>
+    {
     }
 
     public interface INumericalResult :IResult
