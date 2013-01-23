@@ -12,6 +12,7 @@ using FEMLibrary.SolidMechanics.NumericalUtils;
 using System.Diagnostics;
 using FEMLibrary.SolidMechanics.Results;
 using FEMLibrary.SolidMechanics.ODE;
+using System.IO;
 
 namespace FEMLibrary.SolidMechanics.Solving
 {
@@ -49,19 +50,15 @@ namespace FEMLibrary.SolidMechanics.Solving
             
             if (_mesh.IsMeshGenerated)
             {
-                GetConstantMatrix();
-
-                Matrix StiffnessMatrix = GetStiffnessMatrix();
-                Matrix MassMatrix = GetMassMatrix();
-                Matrix GeneralMatrix = Matrix.Transpose((-1) * StiffnessMatrix * MassMatrix.Inverse());
                 List<int> indeciesToDelete;
-                GeneralMatrix = AsumeStaticBoundaryConditions(GeneralMatrix, out indeciesToDelete);
+                Matrix GeneralMatrix = GetGeneralMatrix(out indeciesToDelete);
+                
 
                 Vector init = InitValue();
 
-                //CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.HeunMethodSolve((t,v)=>GetF(v,GeneralMatrix), init, _maxTime, _intervalsTime);
-                //CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.AdamsBashforthMethodsSolve((t, v) => GetF(v, GeneralMatrix), init, _maxTime, _intervalsTime);
-                CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.GirMethodsSolve((t, v) => GetF(v, GeneralMatrix), init, _maxTime, _intervalsTime);
+                CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.HeunMethodSolve((t,v)=>GeneralMatrix*v, init, _maxTime, _intervalsTime);
+                //CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.AdamsBashforthMethodsSolve((t, v) => GeneralMatrix*v, init, _maxTime, _intervalsTime);
+                //CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.GirMethodsSolve((t, v) => GeneralMatrix*v, init, _maxTime, _intervalsTime);
                 
                 SemidiscreteVibrationsNumericalResult result = new SemidiscreteVibrationsNumericalResult(_mesh.Elements, cauchyProblemResult.DeltaTime);
                 foreach (Vector v in cauchyProblemResult.Results) {
@@ -73,15 +70,36 @@ namespace FEMLibrary.SolidMechanics.Solving
             return results;
         }
 
-        private Vector GetF(Vector v, Matrix GeneralMatrix)
+        private Matrix GetGeneralMatrix(out List<int> indeciesToDelete)
         {
-            Vector u = GetU(v);
-            Vector u1 = GetU1(v);
+            
+            GetConstantMatrix();
+            Matrix StiffnessMatrix = GetStiffnessMatrix();
+            Matrix MassMatrix = GetMassMatrix();
+            Matrix G = Matrix.Transpose((-1.0) * StiffnessMatrix * MassMatrix.Inverse());
+            G = AsumeStaticBoundaryConditions(G, out indeciesToDelete);
+            using (StreamWriter sw = new StreamWriter("general.txt"))
+            {
+                sw.WriteLine(G.ToString());
+            }
+            int halfN = G.CountColumns;
+            int n = halfN * 2;
 
-            Vector u_derivative = u1;
-            Vector u1_derivative = GeneralMatrix * u;
+            Matrix matrix = new Matrix(n, n);
+            for (int i = halfN; i < n; i++)
+            {
+                matrix[i - halfN, i] = 1;
+            }
 
-            return GetV(u_derivative, u1_derivative);
+            for (int i = halfN; i < n; i++)
+            {
+                for (int j = 0; j < halfN; j++)
+                {
+                    matrix[i, j] = G[i - halfN, j];
+                }
+            }
+
+            return matrix;
         }
 
         private Vector InitValue()
@@ -105,17 +123,6 @@ namespace FEMLibrary.SolidMechanics.Solving
                 u[i] = v[i];
             }
             return u;
-        }
-
-        private Vector GetU1(Vector v)
-        {
-            Vector u1 = new Vector(v.Length / 2);
-            int shift = v.Length - u1.Length;
-            for (int i = 0; i < u1.Length; i++)
-            {
-                u1[i] = v[i + shift];
-            }
-            return u1;
         }
 
         private Vector GetV(Vector u, Vector u1)
@@ -168,12 +175,29 @@ namespace FEMLibrary.SolidMechanics.Solving
 
         private Matrix LocalMassMatrixFunction(double ksi, double eta)
         {
+            Matrix baseFunctionsMatrix = GetLocalBaseFunctionsMatrix(ksi, eta);
+
             JacobianRectangular J = new JacobianRectangular();
             J.Element = elementCurrent;
 
-            return Matrix.IndentityMatrix(8) * J.GetJacobianDeterminant(ksi, eta);
+            return baseFunctionsMatrix * Matrix.Transpose(baseFunctionsMatrix) * J.GetJacobianDeterminant(ksi, eta);
         }
 
+        private Matrix GetLocalBaseFunctionsMatrix(double ksi, double eta)
+        {
+            Matrix matrix = new Matrix(8, 2);
+            matrix[0, 0] = matrix[1, 1] = 0.25 * (1 - ksi) * (1 - eta);
+            matrix[2, 0] = matrix[3, 1] = 0.25 * (1 + ksi) * (1 - eta);
+            matrix[4, 0] = matrix[5, 1] = 0.25 * (1 + ksi) * (1 + eta);
+            matrix[6, 0] = matrix[7, 1] = 0.25 * (1 - ksi) * (1 + eta);
+            return matrix;
+        }
+
+
+        #endregion
+
+        #region Const Matrix
+        
         private Matrix GetConstantMatrix()
         {
             ConstMatrix = new Matrix(4, 4);

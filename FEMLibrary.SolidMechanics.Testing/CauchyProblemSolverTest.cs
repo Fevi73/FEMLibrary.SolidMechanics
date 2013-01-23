@@ -79,8 +79,8 @@ namespace FEMLibrary.SolidMechanics.Testing
             initValue[1] = -3;
 
             double maxTime = 20; 
-            int intervals = 200; 
-            CauchyProblemResult actual = CauchyProblemSolver.HeunMethodSolve(f, initValue, maxTime, intervals);
+            int intervals = 200;
+            CauchyProblemResult actual = CauchyProblemSolver.GirMethodsSolve(f, initValue, maxTime, intervals);
             Assert.AreEqual(actual, actual);
         }
 
