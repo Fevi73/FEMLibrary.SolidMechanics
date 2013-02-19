@@ -119,7 +119,7 @@ namespace FEMLibrary.SolidMechanics.Results
                     };
                 Point pointKsiTeta = ResultHelper.TransformCoordinates(point, element, elementKsiTeta);
                 Matrix finiteElementApproximationMatrix = getFiniteElementApproximationMatrix(pointKsiTeta);
-                result = GetUByElement(element) * (finiteElementApproximationMatrix * Math.Sin(_frequency * t));
+                result = GetUByElement(element) * (finiteElementApproximationMatrix * Math.Cos(_frequency * t));
             }
             return result;
         }

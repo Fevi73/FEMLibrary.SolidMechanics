@@ -393,12 +393,13 @@ namespace MatrixLibrary
             return (1/lambda);
         }
 
-        public double[] GetEigenvalueSPAlgorithm(out Vector[] eigenvectors, double eps, int resultsCount)
+        public double[] GetEigenvalueSPAlgorithm(Matrix B, out Vector[] eigenvectors, double eps, int resultsCount)
         {
             double[] eigenvalues;
             double[,] eigvectors;
             
-            alglib.smatrixevd(this.matrix, this.CountRows, 1, true, out eigenvalues, out eigvectors);
+            //alglib.smatrixevd(this.matrix, this.CountRows, 1, true, out eigenvalues, out eigvectors);
+            alglib.smatrixgevd(this.matrix, this.CountRows, true, B.matrix, true, 1, 1, out eigenvalues, out eigvectors);
 
             eigenvectors = new Vector[eigenvalues.Length];
             for (int i = 0; i < eigenvalues.Length; i++) {

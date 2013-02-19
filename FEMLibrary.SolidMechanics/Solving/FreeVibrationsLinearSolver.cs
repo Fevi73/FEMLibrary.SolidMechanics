@@ -45,18 +45,21 @@ namespace FEMLibrary.SolidMechanics.Solving
                 Matrix StiffnessMatrix = GetStiffnessMatrix();
                 StiffnessMatrix = AsumeStaticBoundaryConditions(StiffnessMatrix);
 
+                Matrix MassMatrix = GetMassMatrix();
+                MassMatrix = AsumeStaticBoundaryConditions(MassMatrix);
+
 #if (ALL_LAMBDAS)
                 Vector[] eigenVectors;
                 int iterations;
                 //Vector lambdas = StiffnessMatrix.GetEigenvalues(out eigenVectors, out iterations, _error);
-                double[] lambdas = StiffnessMatrix.GetEigenvalueSPAlgorithm(out eigenVectors, _error, resultsCount);
+                double[] lambdas = StiffnessMatrix.GetEigenvalueSPAlgorithm(MassMatrix, out eigenVectors, _error, resultsCount);
                 //Debug.WriteLine(iterations);
 
                 for (int i = 0; i < lambdas.Length; i++)
                 {
                     Vector eigenVector = eigenVectors[i];
                     addStaticPoints(eigenVector);
-                    EigenValuesNumericalResult result = new EigenValuesNumericalResult(_mesh.Elements, eigenVector, Math.Sqrt(lambdas[i] / _model.Material.Rho));
+                    EigenValuesNumericalResult result = new EigenValuesNumericalResult(_mesh.Elements, eigenVector, Math.Sqrt(lambdas[i]));
                     results.Add(result);
                 }
 #else
@@ -70,6 +73,62 @@ namespace FEMLibrary.SolidMechanics.Solving
             }
             return results;
         }
+
+        #region MassMatrix
+
+        private Matrix GetMassMatrix()
+        {
+            Matrix MassMatrix = new Matrix(_mesh.Nodes.Count * 2, _mesh.Nodes.Count * 2);
+            foreach (IFiniteElement element in _mesh.Elements)
+            {
+                Matrix localMassMatrix = GetLocalMassMatrixMatrix(element);
+
+                for (int i = 0; i < element.Count; i++)
+                {
+                    for (int j = 0; j < element.Count; j++)
+                    {
+                        MassMatrix[2 * element[i].Index, 2 * element[j].Index] += localMassMatrix[2 * i, 2 * j];
+                        MassMatrix[2 * element[i].Index + 1, 2 * element[j].Index] += localMassMatrix[2 * i + 1, 2 * j];
+                        MassMatrix[2 * element[i].Index, 2 * element[j].Index + 1] += localMassMatrix[2 * i, 2 * j + 1];
+                        MassMatrix[2 * element[i].Index + 1, 2 * element[j].Index + 1] += localMassMatrix[2 * i + 1, 2 * j + 1];
+                    }
+                }
+            }
+
+            return MassMatrix;
+        }
+
+        private Matrix GetLocalMassMatrixMatrix(IFiniteElement element)
+        {
+            elementCurrent = element;
+
+            Matrix localMassMatrix = _model.Material.Rho * Integration.GaussianIntegrationMatrix(LocalMassMatrixFunction);
+
+            return localMassMatrix;
+        }
+
+        private Matrix LocalMassMatrixFunction(double ksi, double eta)
+        {
+            Matrix baseFunctionsMatrix = GetLocalBaseFunctionsMatrix(ksi, eta);
+
+            JacobianRectangular J = new JacobianRectangular();
+            J.Element = elementCurrent;
+
+            return baseFunctionsMatrix * Matrix.Transpose(baseFunctionsMatrix) * J.GetJacobianDeterminant(ksi, eta);
+        }
+
+        private Matrix GetLocalBaseFunctionsMatrix(double ksi, double eta)
+        {
+            Matrix matrix = new Matrix(8, 2);
+            matrix[0, 0] = matrix[1, 1] = 0.25 * (1 - ksi) * (1 - eta);
+            matrix[2, 0] = matrix[3, 1] = 0.25 * (1 + ksi) * (1 - eta);
+            matrix[4, 0] = matrix[5, 1] = 0.25 * (1 + ksi) * (1 + eta);
+            matrix[6, 0] = matrix[7, 1] = 0.25 * (1 - ksi) * (1 + eta);
+            return matrix;
+        }
+
+
+        #endregion
 
         private Matrix GetConstantMatrix()
         {

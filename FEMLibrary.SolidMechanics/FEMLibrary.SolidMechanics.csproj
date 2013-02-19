@@ -74,6 +74,7 @@
     <Compile Include="Results\CauchyProblemResult.cs" />
     <Compile Include="Results\SemidiscreteVibrationsNumericalResult.cs" />
     <Compile Include="Results\EigenValuesNumericalResult.cs" />
+    <Compile Include="Solving\NewmarkVibrationNonLinearSolver.cs" />
     <Compile Include="Solving\FreeVibrationsLinearSolver.cs" />
     <Compile Include="Results\IResult.cs" />
     <Compile Include="Results\StaticNumericalResult.cs" />

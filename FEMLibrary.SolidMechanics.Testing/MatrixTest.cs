@@ -202,7 +202,7 @@ namespace FEMLibrary.SolidMechanics.Testing
             double eps = 0.001;
             Vector[] eigenVectors;
 
-            double[] lambdas = m.GetEigenvalueSPAlgorithm(out eigenVectors, eps, 3);
+            double[] lambdas = m.GetEigenvalueSPAlgorithm(Matrix.IndentityMatrix(3), out eigenVectors, eps, 3);
 
             Vector expected = lambdas[0] * eigenVectors[0];
             Vector actual = m * eigenVectors[0];

@@ -14,12 +14,14 @@ namespace FEMLibrary.SolidMechanics.Results
         public List<Vector> U { get; set; }
 
         private double _deltaTime;
+        private double _maxTime;
 
-        public SemidiscreteVibrationsNumericalResult(List<IFiniteElement> elements, double deltaTime)
+        public SemidiscreteVibrationsNumericalResult(List<IFiniteElement> elements, double deltaTime, double maxTime)
         {
             Elements = elements;
             U = new List<Vector>();
             _deltaTime = deltaTime;
+            _maxTime = maxTime;
         }
 
         public SemidiscreteVibrationsNumericalResult()
@@ -27,11 +29,22 @@ namespace FEMLibrary.SolidMechanics.Results
             Elements = new List<IFiniteElement>();
             U = new List<Vector>();
             _deltaTime = 0;
+            _maxTime = 0;
         }
 
         public void AddResult(Vector result)
         {
             U.Add(result);
+        }
+
+        private double cutTime(double t)
+        {
+            while (t >= _maxTime)
+            {
+                t -= _maxTime;
+            }
+
+            return t;
         }
 
         public Vector GetResultAtPoint(Point point, double t)
@@ -40,7 +53,7 @@ namespace FEMLibrary.SolidMechanics.Results
             Vector result = null;
             if (element != null)
             {
-                int time = (int)(t / _deltaTime);
+                int time = (int)(cutTime(t) / _deltaTime);
 
                 FiniteElementRectangle elementKsiTeta = new FiniteElementRectangle()
                     {

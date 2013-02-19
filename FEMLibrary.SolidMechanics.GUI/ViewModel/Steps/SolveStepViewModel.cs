@@ -185,9 +185,15 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                 IEnumerable<INumericalResult> initResults = initSolver.Solve(1);
                 EigenValuesNumericalResult res = initResults.First() as EigenValuesNumericalResult;
 
-                //Solver solver = new FreeVibrationsNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 20, 100);
+
+                //Solver solver = new NewmarkVibrationNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 5, 100);
+
+                //Solver solver = new FreeVibrationsNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 2, 50);
+
                 Solver solver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
+
                 //Solver solver = new StationaryNonlinear2DSolver(_solidMechanicsModel.Model, mesh, _error, 20);
+
                 //IResult analiticalResult = new AnaliticalResultRectangleWithOneSideFixed(_solidMechanicsModel.Model);
                 IEnumerable<INumericalResult> results = solver.Solve(_maxResults);
                 
@@ -226,8 +232,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
             while (true)
             {
                 FillResultPicture(numericalResult, elements, time);
-                time++;
-                Thread.Sleep(100);
+                time+=0.01;
+                Thread.Sleep(50);
             }
         }
 
