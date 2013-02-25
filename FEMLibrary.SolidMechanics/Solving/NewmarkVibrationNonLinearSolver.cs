@@ -42,7 +42,9 @@ namespace FEMLibrary.SolidMechanics.Solving
         private double G13;
 
         IFiniteElement elementCurrent;
-        
+        Vector previousU;
+
+        List<int> _indeciesToDelete;
 
         public override IEnumerable<INumericalResult> Solve(int resultsCount)
         {
@@ -51,18 +53,18 @@ namespace FEMLibrary.SolidMechanics.Solving
             if (_mesh.IsMeshGenerated)
             {
                 GetConstantMatrix();
-                List<int> indeciesToDelete = getIndeciesWithStaticBoundaryConditions();
-                Matrix StiffnessMatrix = AsumeStaticBoundaryConditions(GetStiffnessMatrix(), indeciesToDelete);
-                Matrix MassMatrix = AsumeStaticBoundaryConditions(GetMassMatrix(), indeciesToDelete);
+                _indeciesToDelete = getIndeciesWithStaticBoundaryConditions();
+                Matrix StiffnessMatrix = AsumeStaticBoundaryConditions(GetStiffnessMatrix(), _indeciesToDelete);
+                Matrix MassMatrix = AsumeStaticBoundaryConditions(GetMassMatrix(), _indeciesToDelete);
 
-                _init = AsumeStaticBoundaryConditionsToVector(_init, indeciesToDelete);
+                _init = AsumeStaticBoundaryConditionsToVector(_init, _indeciesToDelete);
 
                 CauchyProblemResult newmarkResult = NewmarkSolver(MassMatrix, StiffnessMatrix, _init, 0.5, 0.5, _maxTime, _intervalsTime);
                 
                 SemidiscreteVibrationsNumericalResult result = new SemidiscreteVibrationsNumericalResult(_mesh.Elements, newmarkResult.DeltaTime, _maxTime);
                 foreach (Vector v in newmarkResult.Results) {
-                    addStaticPoints(v, indeciesToDelete);
-                    result.AddResult(v);
+                    Vector resultWithStaticPoints = addStaticPoints(v, _indeciesToDelete);
+                    result.AddResult(resultWithStaticPoints);
                 }
 
                 results.Add(result);
@@ -82,15 +84,13 @@ namespace FEMLibrary.SolidMechanics.Solving
             double a4 = deltaTime * (1-alfa); 
             double a5 = deltaTime * alfa;
 
-            Matrix K = massMatrix * a1 + stiffnessMatrix;
-
             Vector u = initValue;
             Vector du = new Vector(initValue.Length);
             Vector ddu = massMatrix.LUalgorithm((-1) * stiffnessMatrix * initValue);
 
             result.AddResult(u);
 
-
+            Matrix K = massMatrix * a1 + stiffnessMatrix;
             for (double t = deltaTime; t <= maxTime; t += deltaTime)
             {
                 Vector uprev = u;
@@ -98,19 +98,115 @@ namespace FEMLibrary.SolidMechanics.Solving
                 Vector dduprev = ddu;
 
                 Vector F = massMatrix * (a1 * uprev + a2 * duprev + a3 * dduprev);
-
                 u = K.LUalgorithm(F);
 
                 ddu = a1 * (u - uprev) - a2 * duprev - a3 * dduprev;
                 du = duprev + a4 * dduprev + a5 * ddu;
 
-                result.AddResult(u);
+                ApplyNonlinearity(massMatrix, stiffnessMatrix, ref u, ref du, ref ddu, a1, a2, a3, a4, a5);
 
+                result.AddResult(u);
             }
 
             return result;
         }
+
+        private void ApplyNonlinearity(Matrix massMatrix, Matrix stiffnessMatrix, ref Vector u, ref Vector du, ref Vector ddu, double a1, double a2, double a3, double a4, double a5)
+        {
+            Matrix nonlinearMatrix;
+            Vector uprev;
+            Vector duprev;
+            Vector dduprev;
+
+            do
+            {
+                uprev = u;
+                duprev = du;
+                dduprev = ddu;
+                nonlinearMatrix = AsumeStaticBoundaryConditions(GetNonlinearMatrix(uprev), _indeciesToDelete);
+                Matrix K_hat = stiffnessMatrix + nonlinearMatrix;
+                Vector F_hat = (-1) * massMatrix * dduprev;
+                u = K_hat.LUalgorithm(F_hat);
+                ddu = a1 * (u - uprev) - a2 * duprev - a3 * dduprev;
+                du = duprev + a4 * dduprev + a5 * ddu;
+            }
+            while (Vector.Norm(u - uprev) < _error);
+        }
+
+        #region Nonliear Stiffness Matrix
+        private Matrix GetNonlinearMatrix(Vector u)
+        {
+            Vector uWithStaticPoints = addStaticPoints(u, _indeciesToDelete);
+            Matrix NonlinearMatrix = new Matrix(_mesh.Nodes.Count * 2, _mesh.Nodes.Count * 2);
+            foreach (IFiniteElement element in _mesh.Elements)
+            {
+                Matrix localMassMatrix = GetLocalNonlinearMatrix(element, uWithStaticPoints);
+
+                for (int i = 0; i < element.Count; i++)
+                {
+                    for (int j = 0; j < element.Count; j++)
+                    {
+                        NonlinearMatrix[2 * element[i].Index, 2 * element[j].Index] += localMassMatrix[2 * i, 2 * j];
+                        NonlinearMatrix[2 * element[i].Index + 1, 2 * element[j].Index] += localMassMatrix[2 * i + 1, 2 * j];
+                        NonlinearMatrix[2 * element[i].Index, 2 * element[j].Index + 1] += localMassMatrix[2 * i, 2 * j + 1];
+                        NonlinearMatrix[2 * element[i].Index + 1, 2 * element[j].Index + 1] += localMassMatrix[2 * i + 1, 2 * j + 1];
+                    }
+                }
+            }
+
+            return NonlinearMatrix;
+        }
+
+        private Matrix GetLocalNonlinearMatrix(IFiniteElement element, Vector u)
+        {
+            elementCurrent = element;
+            previousU = u;
+
+            Matrix localMassMatrix =  Integration.GaussianIntegrationMatrix(LocalNonlinearMatrixFunction);
+
+            return localMassMatrix;
+        }
+
+        private Matrix LocalNonlinearMatrixFunction(double ksi, double eta)
+        {
+            Matrix derivativeMatrix = GetLocalDerivativeMatrix(elementCurrent, ksi, eta);
+
+            Matrix derivativeUMatrix = GetLocalUDerivativeMatrix(previousU, elementCurrent, ksi, eta);
+
+            JacobianRectangular J = new JacobianRectangular();
+            J.Element = elementCurrent;
+
+            return derivativeMatrix * ConstMatrix * Matrix.Transpose(derivativeUMatrix) * Matrix.Transpose(derivativeMatrix) * J.GetJacobianDeterminant(ksi, eta);
+        }
+
         
+
+        private Matrix GetLocalUDerivativeMatrix(Vector previousU, IFiniteElement elementCurrent, double ksi, double eta)
+        {
+            Matrix derivativeMatrix = GetLocalDerivativeMatrix(elementCurrent, ksi, eta);
+            Vector uOnElement = new Vector(8);
+            if (previousU != null)
+            {
+                for (int i = 0; i < elementCurrent.Count; i++)
+                {
+                    uOnElement[2 * i] = previousU[2 * elementCurrent[i].Index];
+                    uOnElement[2 * i + 1] = previousU[2 * elementCurrent[i].Index + 1];
+                }
+            }
+
+            Vector uDerivative = Matrix.Transpose(derivativeMatrix) * uOnElement;
+            Matrix derivativeUMatrix = new Matrix(4, 4);
+            derivativeUMatrix[0, 0] = derivativeUMatrix[2, 2] = uDerivative[0];
+            derivativeUMatrix[1, 1] = derivativeUMatrix[3, 3] = uDerivative[1];
+            derivativeUMatrix[3, 0] = derivativeUMatrix[1, 2] = uDerivative[2];
+            derivativeUMatrix[2, 1] = derivativeUMatrix[0, 3] = uDerivative[3];
+            return derivativeUMatrix;
+
+        }
+
+
+        #endregion
+
         #region MassMatrix
 
         private Matrix GetMassMatrix()
@@ -255,13 +351,15 @@ namespace FEMLibrary.SolidMechanics.Solving
             return indecies;
         }
 
-        private void addStaticPoints(Vector resultVector, List<int> indeciesToDelete)
+        private Vector addStaticPoints(Vector resultVector, List<int> indeciesToDelete)
         {
+            Vector res = new Vector(resultVector);
             indeciesToDelete.Sort();
             foreach (int index in indeciesToDelete)
             {
-                resultVector.Insert(0, index);
+                res.Insert(0, index);
             }
+            return res;
         }
         #endregion
 
