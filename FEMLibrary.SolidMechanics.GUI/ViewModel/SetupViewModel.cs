@@ -12,7 +12,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
     public class SetupViewModel : ViewModelBase
     {
         private const string FILENAME = "tempmodel.dat";
-        private SolidMechanicsModel _model;
+        private SolidMechanicsModel model;
 
         public ObservableCollection<WizardStepViewModelBase> Steps { get; private set; }
 
@@ -21,7 +21,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// </summary>
         public SetupViewModel()
         {
-            _model = new SolidMechanicsModel(new Rectangle(0, 0));
+            model = new SolidMechanicsModel(new Rectangle(0, 0));
             Steps = getSteps();
             SelectStep(Steps[0]);
 
@@ -35,12 +35,12 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         {
             ObservableCollection<WizardStepViewModelBase> steps = new ObservableCollection<WizardStepViewModelBase>();
 
-            steps.Add(new ShapeStepViewModel(_model));
-            steps.Add(new MaterialStepViewModel(_model));
-            steps.Add(new PointSettingsStepViewModel(_model));
-            steps.Add(new BoundarySettingsStepViewModel(_model));
-            steps.Add(new RectangleMeshSettingsStepViewModel(_model));
-            steps.Add(new SolveStepViewModel(_model));
+            steps.Add(new ShapeStepViewModel(model));
+            steps.Add(new MaterialStepViewModel(model));
+            steps.Add(new PointSettingsStepViewModel(model));
+            steps.Add(new BoundarySettingsStepViewModel(model));
+            steps.Add(new RectangleMeshSettingsStepViewModel(model));
+            steps.Add(new SolveStepViewModel(model));
 
             return steps;
         }
@@ -50,7 +50,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// </summary>
         public const string ActiveStepPropertyName = "ActiveStep";
 
-        private WizardStepViewModelBase _activeStep = null;
+        private WizardStepViewModelBase activeStep = null;
 
         /// <summary>
         /// Gets the MyProperty property.
@@ -62,17 +62,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         {
             get
             {
-                return _activeStep;
+                return activeStep;
             }
 
             set
             {
-                if (_activeStep == value)
+                if (activeStep == value)
                 {
                     return;
                 }
 
-                _activeStep = value;
+                activeStep = value;
                 // Update bindings, no broadcast
                 RaisePropertyChanged(ActiveStepPropertyName);
             }
@@ -119,7 +119,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 
         public void Save()
         {
-            _model.Save(FILENAME);
+            model.Save(FILENAME);
         }
 
         public RelayCommand LoadCommand { get; private set; }
@@ -127,7 +127,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         public void Load()
         {
             SolidMechanicsModel model = SolidMechanicsModel.Load(FILENAME);
-            foreach (WizardStepViewModelBase step in Steps) {
+            foreach (WizardStepViewModelBase step in Steps) 
+            {
                 step.RefreshProperties(model);
             }
         }

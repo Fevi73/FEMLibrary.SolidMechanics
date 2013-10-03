@@ -1,26 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
+﻿using FEMLibrary.SolidMechanics.Geometry;
 using FEMLibrary.SolidMechanics.GUI.Models;
-using FEMLibrary.SolidMechanics.Geometry;
 using FEMLibrary.SolidMechanics.Meshing;
+using FEMLibrary.SolidMechanics.Results;
 using FEMLibrary.SolidMechanics.Solving;
 using GalaSoft.MvvmLight.Command;
-using MatrixLibrary;
-using System.Timers;
-using System.Windows.Threading;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading;
 using System.Windows;
-using FEMLibrary.SolidMechanics.Results;
 
 namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 {
     public class SolveStepViewModel:WizardStepViewModelBase
     {
-
         public SolveStepViewModel(SolidMechanicsModel model):base("Solve", model)
         {
             SolveCommand = new RelayCommand(Solve);
@@ -35,7 +29,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// </summary>
         public const string ErrorPropertyName = "Error";
 
-        private double _error = 0.0001;
+        private double error = 0.0001;
 
         /// <summary>
         /// Gets the Error property.
@@ -47,17 +41,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _error;
+                return error;
             }
 
             set
             {
-                if (_error == value)
+                if (error == value)
                 {
                     return;
                 }
 
-                _error = value;
+                error = value;
 
                 // Update bindings, no broadcast
                 RaisePropertyChanged(ErrorPropertyName);
@@ -70,7 +64,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// </summary>
         public const string MaxIterationsPropertyName = "MaxIterations";
 
-        private double _maxIterations = 30;
+        private double maxIterations = 30;
 
         /// <summary>
         /// Gets the MaxIterations property.
@@ -82,17 +76,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _maxIterations;
+                return maxIterations;
             }
 
             set
             {
-                if (_maxIterations == value)
+                if (maxIterations == value)
                 {
                     return;
                 }
 
-                _maxIterations = value;
+                maxIterations = value;
 
                 // Update bindings, no broadcast
                 RaisePropertyChanged(MaxIterationsPropertyName);
@@ -104,7 +98,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// </summary>
         public const string MaxResultsPropertyName = "MaxResults";
 
-        private int _maxResults = 1;
+        private int maxResults = 1;
 
         /// <summary>
         /// Gets the MaxResults property.
@@ -116,28 +110,61 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _maxResults;
+                return maxResults;
             }
 
             set
             {
-                if (_maxResults == value)
+                if (maxResults == value)
                 {
                     return;
                 }
 
-                _maxResults = value;
+                maxResults = value;
 
                 RaisePropertyChanged(MaxResultsPropertyName);
             }
         }
 
+
+        /// <summary>
+        /// The <see cref="TimeElapsed" /> property's name.
+        /// </summary>
+        public const string TimeElapsedPropertyName = "TimeElapsed";
+
+        private TimeSpan timeElapsed;
+
+        /// <summary>
+        /// Gets the TimeElapsed property.
+        /// TODO Update documentation:
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// This property's value is broadcasted by the Messenger's default instance when it changes.
+        /// </summary>
+        public TimeSpan TimeElapsed
+        {
+            get
+            {
+                return timeElapsed;
+            }
+
+            set
+            {
+                if (timeElapsed == value)
+                {
+                    return;
+                }
+
+                timeElapsed = value;
+
+                RaisePropertyChanged(TimeElapsedPropertyName);
+            }
+        }
         /// <summary>
         /// The <see cref="CurrentResult" /> property's name.
         /// </summary>
         public const string CurrentResultPropertyName = "CurrentResult";
 
-        private INumericalResult _currentResultProperty = null;
+        private INumericalResult currentResultProperty = null;
 
         /// <summary>
         /// Gets the CurrentResult property.
@@ -149,17 +176,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _currentResultProperty;
+                return currentResultProperty;
             }
 
             set
             {
-                if (_currentResultProperty == value)
+                if (currentResultProperty == value)
                 {
                     return;
                 }
-                _currentResultProperty = value;
-                ShowResult(_currentResultProperty, _pointsForGrid);
+                currentResultProperty = value;
+                ShowResult(currentResultProperty, pointsForGrid);
                 RaisePropertyChanged(CurrentResultPropertyName);
             }
         }
@@ -170,34 +197,38 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
         #endregion
 
-        private IEnumerable<FEMLibrary.SolidMechanics.Geometry.Point> _pointsForGrid;
+        private IEnumerable<FEMLibrary.SolidMechanics.Geometry.Point> pointsForGrid;
 
         private Thread drawingThread;
 
         public void Solve()
         {
-            Rectangle rectangle = _solidMechanicsModel.Model.Shape as Rectangle;
+            Rectangle rectangle = solidMechanicsModel.Model.Shape as Rectangle;
             if (rectangle != null)
             {
-                RectangularMesh mesh = new RectangularMesh(rectangle, _solidMechanicsModel.VerticalElements, _solidMechanicsModel.HorizontalElements);
+                RectangularMesh mesh = new RectangularMesh(rectangle, solidMechanicsModel.VerticalElements, solidMechanicsModel.HorizontalElements);
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
 
-                Solver initSolver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
+                /*Solver initSolver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
                 IEnumerable<INumericalResult> initResults = initSolver.Solve(1);
-                EigenValuesNumericalResult res = initResults.First() as EigenValuesNumericalResult;
+                EigenValuesNumericalResult res = initResults.First() as EigenValuesNumericalResult;*/
 
-
-                Solver solver = new NewmarkVibrationNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 5, 100);
+                //Solver solver = new NewmarkVibrationNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 5, 50);
 
                 //Solver solver = new FreeVibrationsNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 2, 50);
-
-                //Solver solver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
+                
+                Solver solver = new FreeVibrationsLinearSolver(solidMechanicsModel.Model, mesh, error);
 
                 //Solver solver = new StationaryNonlinear2DSolver(_solidMechanicsModel.Model, mesh, _error, 20);
 
                 //IResult analiticalResult = new AnaliticalResultRectangleWithOneSideFixed(_solidMechanicsModel.Model);
-                IEnumerable<INumericalResult> results = solver.Solve(_maxResults);
+
+                IEnumerable<INumericalResult> results = solver.Solve(maxResults);
                 
-                _pointsForGrid = mesh.GetPointsForResult();
+                sw.Stop();
+                TimeElapsed = sw.Elapsed;
+                pointsForGrid = mesh.GetPointsForResult();
                 Results.Clear();
                 foreach (INumericalResult result in results)
                 {
@@ -229,6 +260,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         private void DrawResult(IResult numericalResult, IEnumerable<IFiniteElement> elements)
         {
             double time = 0;
+            FillResultPicture(numericalResult, elements, time);
             while (true)
             {
                 FillResultPicture(numericalResult, elements, time);
@@ -240,7 +272,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         private void FillResultPicture(IResult numericalResult, IEnumerable<IFiniteElement> elements, double t)
         {
             List<Shape> shapes = new List<Shape>();
-            foreach (FiniteElementRectangle fe in elements) {
+            foreach (FiniteElementRectangle fe in elements) 
+            {
                 shapes.Add(ConvertFiniteElementToShape(fe, numericalResult, t));
             }
             if (Application.Current != null)
@@ -252,7 +285,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                     {
                         Figures.Add(shape);
                     }
-                }), null);
+                }));
             }
             else 
             {

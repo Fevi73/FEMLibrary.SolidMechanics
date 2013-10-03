@@ -11,15 +11,15 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 {
     public abstract class WizardStepViewModelBase: ViewModelBase
     {
-        protected SolidMechanicsModel _solidMechanicsModel;
+        protected SolidMechanicsModel solidMechanicsModel;
 
-        private string _displayName;
+        private string displayName;
         
         public string DisplayName
         {
             get
             {
-                return _displayName;
+                return this.displayName;
             }
         }
 
@@ -34,7 +34,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// </summary>
         public const string IsCurrentPropertyName = "IsCurrent";
 
-        private bool _isCurrent = false;
+        private bool isCurrent = false;
 
         /// <summary>
         /// Gets the IsCurrent property.
@@ -46,17 +46,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         {
             get
             {
-                return _isCurrent;
+                return isCurrent;
             }
 
             set
             {
-                if (_isCurrent == value)
+                if (isCurrent == value)
                 {
                     return;
                 }
 
-                _isCurrent = value;
+                isCurrent = value;
 
                 
                 // Update bindings, no broadcast
@@ -66,8 +66,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 
         protected WizardStepViewModelBase(string displayName, SolidMechanicsModel model)
         {
-            _displayName = displayName;
-            _solidMechanicsModel = model;
+            this.displayName = displayName;
+            solidMechanicsModel = model;
             Figures = new ObservableCollection<Shape>();
         }
 

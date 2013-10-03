@@ -33,11 +33,8 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
 
         public static readonly DependencyProperty LinearDataProperty = DependencyProperty.Register("LinearData",
                                                                                                    typeof (string),
-                                                                                                   typeof (
-                                                                                                       DrawResultControl
-                                                                                                       ),
-                                                                                                   new PropertyMetadata(
-                                                                                                       string.Empty));
+                                                                                                   typeof (DrawResultControl),
+                                                                                                   new PropertyMetadata(string.Empty));
 
         public string NonLinearData
         {
@@ -47,11 +44,8 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
 
         public static readonly DependencyProperty NonLinearDataProperty = DependencyProperty.Register("NonLinearData",
                                                                                                    typeof(string),
-                                                                                                   typeof(
-                                                                                                       DrawResultControl
-                                                                                                       ),
-                                                                                                   new PropertyMetadata(
-                                                                                                       string.Empty));
+                                                                                                   typeof(DrawResultControl),
+                                                                                                   new PropertyMetadata(string.Empty));
 
         public string AxesData
         {
@@ -61,11 +55,8 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
 
         public static readonly DependencyProperty AxesDataProperty = DependencyProperty.Register("AxesData",
                                                                                                    typeof(string),
-                                                                                                   typeof(
-                                                                                                       DrawResultControl
-                                                                                                       ),
-                                                                                                   new PropertyMetadata(
-                                                                                                       string.Empty));
+                                                                                                   typeof(DrawResultControl),
+                                                                                                   new PropertyMetadata(string.Empty));
 
 
         public static void ShowDrawResult(string linear, string nonlinear, string axes)

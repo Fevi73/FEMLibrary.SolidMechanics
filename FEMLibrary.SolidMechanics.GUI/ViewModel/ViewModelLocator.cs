@@ -59,7 +59,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
     /// </summary>
     public class ViewModelLocator
     {
-        private static SetupViewModel _setup;
+        private static SetupViewModel setup;
 
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.
@@ -78,12 +78,12 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         {
             get
             {
-                if (_setup == null)
+                if (setup == null)
                 {
                     CreateSetup();
                 }
 
-                return _setup;
+                return setup;
             }
         }
 
@@ -106,9 +106,9 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// </summary>
         public static void CreateSetup()
         {
-            if (_setup == null)
+            if (setup == null)
             {
-                _setup = new SetupViewModel();
+                setup = new SetupViewModel();
             }
         }
 
@@ -119,8 +119,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// </summary>
         public static void ClearMain()
         {
-            _setup.Cleanup();
-            _setup = null;
+            setup.Cleanup();
+            setup = null;
         }
 
         /// <summary>

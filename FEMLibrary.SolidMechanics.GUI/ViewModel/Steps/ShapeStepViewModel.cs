@@ -8,18 +8,19 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 {
     public class ShapeStepViewModel:WizardStepViewModelBase
     {
-        private Rectangle _rectangle;
+        private Rectangle rectangle;
 
         public ShapeStepViewModel(SolidMechanicsModel model):base("Shape", model)
         {
-            _rectangle = _solidMechanicsModel.Model.Shape as Rectangle;
-            IsValid = _rectangle != null;
+            rectangle = solidMechanicsModel.Model.Shape as Rectangle;
+            IsValid = rectangle != null;
         }
 
         public override void RefreshProperties(SolidMechanicsModel model)
         {
             Rectangle rectangle = model.Model.Shape as Rectangle;
-            if (rectangle != null){
+            if (rectangle != null)
+            {
                 Height = rectangle.Height;
                 Width = rectangle.Width;
             }
@@ -30,7 +31,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// </summary>
         public const string IsValidPropertyName = "IsValid";
 
-        private bool _isValid = false;
+        private bool isValid = false;
 
         /// <summary>
         /// Gets the IsValid property.
@@ -42,17 +43,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _isValid;
+                return isValid;
             }
 
             set
             {
-                if (_isValid == value)
+                if (isValid == value)
                 {
                     return;
                 }
 
-                _isValid = value;
+                isValid = value;
 
                 // Update bindings, no broadcast
                 RaisePropertyChanged(IsValidPropertyName);
@@ -75,9 +76,9 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                if (_isValid)
+                if (isValid)
                 {
-                    return _rectangle.Height;
+                    return rectangle.Height;
                 }
                 else
                 {
@@ -87,14 +88,14 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
             set
             {
-                if (_isValid)
+                if (isValid)
                 {
-                    if (_rectangle.Height == value)
+                    if (rectangle.Height == value)
                     {
                         return;
                     }
 
-                    _rectangle.Height = value;
+                    rectangle.Height = value;
 
                     // Update bindings, no broadcast
                     RaisePropertyChanged(HeightPropertyName);
@@ -118,9 +119,9 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                if (_isValid)
+                if (isValid)
                 {
-                    return _rectangle.Width;
+                    return rectangle.Width;
                 }
                 else
                 {
@@ -130,14 +131,14 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
             set
             {
-                if (_isValid)
+                if (isValid)
                 {
-                    if (_rectangle.Width == value)
+                    if (rectangle.Width == value)
                     {
                         return;
                     }
 
-                    _rectangle.Width = value;
+                    rectangle.Width = value;
 
                     // Update bindings, no broadcast
                     RaisePropertyChanged(WidthPropertyName);

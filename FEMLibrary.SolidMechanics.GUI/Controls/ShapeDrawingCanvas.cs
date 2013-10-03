@@ -49,7 +49,8 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
     {
         private System.Windows.Point coordinateOrigin;
 
-        public ShapeDrawingCanvas() {
+        public ShapeDrawingCanvas() 
+        {
             coordinateOrigin = new System.Windows.Point(50, 400);
             this.MouseLeftButtonDown += new MouseButtonEventHandler(ShapeDrawingCanvas_MouseLeftButtonDown);
             this.MouseMove += new MouseEventHandler(ShapeDrawingCanvas_MouseMove);
@@ -75,14 +76,15 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
         }
 
         public static readonly DependencyProperty ShapesProperty = 
-            DependencyProperty.Register("Shapes", typeof(IEnumerable<Shape>), typeof(ShapeDrawingCanvas), new FrameworkPropertyMetadata(ShapePropertyChangedCallback));
+            DependencyProperty.Register("Shapes", typeof(IEnumerable<Shape>), typeof(ShapeDrawingCanvas), new FrameworkPropertyMetadata(shapePropertyChangedCallback));
         public IEnumerable<Shape> Shapes 
         {
             get { return (IEnumerable<Shape>)GetValue(ShapesProperty); }
             set { SetValue(ShapesProperty, value); }
         }
 
-        private static void ShapePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e){
+        private static void shapePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
             ShapeDrawingCanvas canvas = d as ShapeDrawingCanvas;
             if (canvas != null) {
                     canvas.OnShapesChanged(e.NewValue, e.OldValue);
@@ -97,13 +99,13 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
             INotifyCollectionChanged collection = newShapes as INotifyCollectionChanged;
             if (collection != null)
             {
-                collection.CollectionChanged += new NotifyCollectionChangedEventHandler(collection_CollectionChanged);
+                collection.CollectionChanged += new NotifyCollectionChangedEventHandler(collectionCollectionChanged);
             }
 
             INotifyCollectionChanged oldCollection = oldShapes as INotifyCollectionChanged;
             if (oldCollection != null)
             {
-                oldCollection.CollectionChanged -= new NotifyCollectionChangedEventHandler(collection_CollectionChanged);
+                oldCollection.CollectionChanged -= new NotifyCollectionChangedEventHandler(collectionCollectionChanged);
             }
         }
 
@@ -116,7 +118,7 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
             }
         }
 
-        private void collection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void collectionCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -156,13 +158,13 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
         public void AddVisual(Visual visual, Shape shape)
         {
             visuals.Add(shape, visual);
-            base.AddVisualChild(visual);
-            base.AddLogicalChild(visual);
+            AddVisualChild(visual);
+            AddLogicalChild(visual);
         }
         public void DeleteVisual(Visual visual)
         {
-            base.RemoveVisualChild(visual);
-            base.RemoveLogicalChild(visual);
+            RemoveVisualChild(visual);
+            RemoveLogicalChild(visual);
         }
 
         public void DeleteAllShapes() 
@@ -195,21 +197,25 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
             }
         }
 
-        private Pen drawingPen = new Pen(Brushes.Red, 1); 
+        private Pen drawingPen = new Pen(Brushes.Red, 1);
         private void drawShape(DrawingVisual visual, Shape shape)
         {
             using (DrawingContext dc = visual.RenderOpen())
             {
-                for(int i = 0; i < shape.Points.Count; i++){
-                    int prevIndex = i-1;
-                    if (prevIndex < 0) { prevIndex = shape.Points.Count - 1; }
+                for (int i = 0; i < shape.Points.Count; i++)
+                {
+                    int prevIndex = i - 1;
+                    if (prevIndex < 0) 
+                    { 
+                        prevIndex = shape.Points.Count - 1; 
+                    }
 
                     System.Windows.Point firstPoint = ConvertPoint(shape.Points[prevIndex]);
                     System.Windows.Point secondPoint = ConvertPoint(shape.Points[i]);
 
-                    dc.DrawLine(drawingPen, firstPoint, secondPoint);  
+                    dc.DrawLine(drawingPen, firstPoint, secondPoint);
                 }
-            } 
+            }
         }
 
         private new System.Windows.Point ConvertPoint(Geometry.Point point)
@@ -220,18 +226,18 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
 
         private double ConvertXCoordite(double x)
         {
-            return Zoom * x + coordinateOrigin.X;
+            return (Zoom * x) + coordinateOrigin.X;
         }
 
         private double ConvertYCoordite(double y)
         {
-            return (-1) * Zoom * y + coordinateOrigin.Y;
+            return ((-1) * Zoom * y) + coordinateOrigin.Y;
         }
 
         private bool isDragging = false;
-        System.Windows.Point startPoint;
+        private System.Windows.Point startPoint;
 
-        void ShapeDrawingCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void ShapeDrawingCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             isDragging = true;
             startPoint = e.GetPosition(this);
@@ -242,8 +248,8 @@ namespace FEMLibrary.SolidMechanics.GUI.Controls
             if (isDragging)
             {
                 System.Windows.Point currentPoint = e.GetPosition(this);
-                coordinateOrigin.X += (currentPoint.X - startPoint.X);
-                coordinateOrigin.Y += (currentPoint.Y - startPoint.Y);
+                coordinateOrigin.X += currentPoint.X - startPoint.X;
+                coordinateOrigin.Y += currentPoint.Y - startPoint.Y;
                 this.Refresh(this.Shapes);
                 startPoint = currentPoint;
                 /*

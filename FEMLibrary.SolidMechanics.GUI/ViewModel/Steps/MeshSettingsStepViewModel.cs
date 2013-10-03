@@ -12,9 +12,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
     {
         public RectangleMeshSettingsStepViewModel(SolidMechanicsModel model)
             : base("Mesh Settings", model)
-        {
-            
-        }
+        { }
 
         public override void RefreshProperties(SolidMechanicsModel model)
         {
@@ -37,17 +35,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _solidMechanicsModel.VerticalElements;
+                return solidMechanicsModel.VerticalElements;
             }
 
             set
             {
-                if (_solidMechanicsModel.VerticalElements == value)
+                if (solidMechanicsModel.VerticalElements == value)
                 {
                     return;
                 }
 
-                _solidMechanicsModel.VerticalElements = value;
+                solidMechanicsModel.VerticalElements = value;
 
                 // Update bindings, no broadcast
                 RaisePropertyChanged(VerticalElementsPropertyName);
@@ -70,17 +68,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _solidMechanicsModel.HorizontalElements;
+                return solidMechanicsModel.HorizontalElements;
             }
 
             set
             {
-                if (_solidMechanicsModel.HorizontalElements == value)
+                if (solidMechanicsModel.HorizontalElements == value)
                 {
                     return;
                 }
 
-                _solidMechanicsModel.HorizontalElements = value;
+                solidMechanicsModel.HorizontalElements = value;
 
                 // Update bindings, no broadcast
                 RaisePropertyChanged(HorizontalElementsPropertyName);
@@ -90,10 +88,10 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
         private void FillResultPicture()
         {
-            Rectangle rectangle = _solidMechanicsModel.Model.Shape as Rectangle;
+            Rectangle rectangle = solidMechanicsModel.Model.Shape as Rectangle;
             if (rectangle != null)
             {
-                RectangularMesh mesh = new RectangularMesh(rectangle, _solidMechanicsModel.VerticalElements, _solidMechanicsModel.HorizontalElements);
+                RectangularMesh mesh = new RectangularMesh(rectangle, solidMechanicsModel.VerticalElements, solidMechanicsModel.HorizontalElements);
                 List<Shape> shapes = new List<Shape>();
                 foreach (FiniteElementRectangle fe in mesh.Elements)
                 {

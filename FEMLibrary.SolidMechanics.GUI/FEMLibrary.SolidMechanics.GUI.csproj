@@ -93,9 +93,11 @@
     <Compile Include="Models\ResultItem.cs" />
     <Compile Include="Models\SolidMechanicsModel.cs" />
     <Compile Include="ViewModel\Steps\BoundarySettingsStepViewModel.cs" />
+    <Compile Include="ViewModel\Steps\EdgeViewModel.cs" />
     <Compile Include="ViewModel\Steps\PointSettingsStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\MaterialStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\MeshSettingsStepViewModel.cs" />
+    <Compile Include="ViewModel\Steps\PointViewModel.cs" />
     <Compile Include="ViewModel\Steps\ShapeStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\SolveStepViewModel.cs" />
     <Compile Include="ViewModel\WizardStepViewModelBase.cs" />

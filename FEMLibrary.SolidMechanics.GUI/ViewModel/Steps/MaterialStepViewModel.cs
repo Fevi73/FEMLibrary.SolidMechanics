@@ -27,17 +27,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _solidMechanicsModel.Model.Material.Rho;
+                return solidMechanicsModel.Model.Material.Rho;
             }
 
             set
             {
-                if (_solidMechanicsModel.Model.Material.Rho == value)
+                if (solidMechanicsModel.Model.Material.Rho == value)
                 {
                     return;
                 }
 
-                _solidMechanicsModel.Model.Material.Rho = value;
+                solidMechanicsModel.Model.Material.Rho = value;
 
 
                 // Update bindings, no broadcast
@@ -61,18 +61,18 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _solidMechanicsModel.Model.Material.v[0,0];
+                return solidMechanicsModel.Model.Material.v[0,0];
             }
 
             set
             {
-                if (_solidMechanicsModel.Model.Material.v[0, 0] == value)
+                if (solidMechanicsModel.Model.Material.v[0, 0] == value)
                 {
                     return;
                 }
 
-                _solidMechanicsModel.Model.Material.AutoFillV(value);
-                _solidMechanicsModel.Model.Material.AutoFillG();
+                solidMechanicsModel.Model.Material.AutoFillV(value);
+                solidMechanicsModel.Model.Material.AutoFillG();
 
                 // Update bindings, no broadcast
                 RaisePropertyChanged(PoissonCoefPropertyName);
@@ -92,17 +92,20 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// </summary>
         public double YoungModulus
         {
-            get { return _solidMechanicsModel.Model.Material.E[0]; }
+            get 
+            { 
+                return solidMechanicsModel.Model.Material.E[0]; 
+            }
 
             set
             {
-                if (_solidMechanicsModel.Model.Material.E[0] == value)
+                if (solidMechanicsModel.Model.Material.E[0] == value)
                 {
                     return;
                 }
 
-                _solidMechanicsModel.Model.Material.AutoiFillE(value);
-                _solidMechanicsModel.Model.Material.AutoFillG();
+                solidMechanicsModel.Model.Material.AutoiFillE(value);
+                solidMechanicsModel.Model.Material.AutoFillG();
 
                 // Update bindings, no broadcast
                 RaisePropertyChanged(YoungModulusPropertyName);

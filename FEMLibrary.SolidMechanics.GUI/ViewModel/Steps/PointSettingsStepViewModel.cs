@@ -13,7 +13,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         public PointSettingsStepViewModel(SolidMechanicsModel model)
             : base("Point Settings", model)
         {
-            SetPointConditions(_solidMechanicsModel);
+            SetPointConditions(solidMechanicsModel);
         }
 
         private void SetPointConditions(SolidMechanicsModel model)
@@ -35,7 +35,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// </summary>
         public const string CurrentPointPropertyName = "CurrentPoint";
 
-        private PointViewModel _currentPoint;
+        private PointViewModel currentPoint;
 
         /// <summary>
         /// Gets the CurrentEdge property.
@@ -47,17 +47,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         {
             get
             {
-                return _currentPoint;
+                return currentPoint;
             }
 
             set
             {
-                if (_currentPoint == value)
+                if (currentPoint == value)
                 {
                     return;
                 }
 
-                _currentPoint = value;
+                currentPoint = value;
 
                 // Update bindings, no broadcast
                 RaisePropertyChanged(CurrentPointPropertyName);
@@ -66,142 +66,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
         public override void RefreshProperties(SolidMechanicsModel model)
         {
-            _solidMechanicsModel.Model.Shape.Points.Clear();
-            _solidMechanicsModel.Model.PointConditions.Clear();
-            foreach (Point point in model.Model.Shape.Points) {
-                _solidMechanicsModel.Model.Shape.Points.Add(point);
-                _solidMechanicsModel.Model.PointConditions.Add(point, model.Model.PointConditions[point]);
+            solidMechanicsModel.Model.Shape.Points.Clear();
+            solidMechanicsModel.Model.PointConditions.Clear();
+            foreach (Point point in model.Model.Shape.Points) 
+            {
+                solidMechanicsModel.Model.Shape.Points.Add(point);
+                solidMechanicsModel.Model.PointConditions.Add(point, model.Model.PointConditions[point]);
             }
 
-            SetPointConditions(_solidMechanicsModel);
+            SetPointConditions(solidMechanicsModel);
         }
     }
 
-    public class PointViewModel : ViewModelBase
-    {
-        public int Index { get; private set; }
-        public Point Point { get; private set; }
-        public BoundaryCondition Condition { get; private set; }
-
-        public PointViewModel(int index, Point point, BoundaryCondition condition)
-        {
-            Index = index;
-            Point = point;
-            Condition = condition;
-            Types = new ObservableCollection<BoundaryConditionsType>(getTypesOfBoundaryConditions());
-        }
-
-        public ObservableCollection<BoundaryConditionsType> Types { get; private set; }
-
-        private IEnumerable<BoundaryConditionsType> getTypesOfBoundaryConditions()
-        {
-            List<BoundaryConditionsType> typesEnumarable = new List<BoundaryConditionsType>();
-            Array typesArray = Enum.GetValues(typeof (BoundaryConditionsType));
-            foreach(var type in typesArray)
-            {
-                typesEnumarable.Add((BoundaryConditionsType)type);
-            }
-            return typesEnumarable;
-        }
-
-        /// <summary>
-        /// The <see cref="BoundaryConditionType" /> property's name.
-        /// </summary>
-        public const string BoundaryConditionTypePropertyName = "BoundaryConditionType";
-
-        /// <summary>
-        /// Gets the BoundaryConditionType property.
-        /// TODO Update documentation:
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// This property's value is broadcasted by the Messenger's default instance when it changes.
-        /// </summary>
-        public BoundaryConditionsType BoundaryConditionType
-        {
-            get
-            {
-                return Condition.Type;
-            }
-
-            set
-            {
-                if (Condition.Type == value)
-                {
-                    return;
-                }
-
-                Condition.Type = value;
-
-                // Update bindings, no broadcast
-                RaisePropertyChanged(BoundaryConditionTypePropertyName);
-
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="LoadUp" /> property's name.
-        /// </summary>
-        public const string LoadUpPropertyName = "LoadUp";
-
-        /// <summary>
-        /// Gets the LoadDown property.
-        /// TODO Update documentation:
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// This property's value is broadcasted by the Messenger's default instance when it changes.
-        /// </summary>
-        public double LoadUp
-        {
-            get
-            {
-                return Condition.Value[2];
-            }
-
-            set
-            {
-                if (Condition.Value[2] == value)
-                {
-                    return;
-                }
-
-                Condition.Value[2] = value;
-
-                // Update bindings, no broadcast
-                RaisePropertyChanged(LoadUpPropertyName);
-
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="LoadRight" /> property's name.
-        /// </summary>
-        public const string LoadRightPropertyName = "LoadRight";
-
-
-        /// <summary>
-        /// Gets the LoadRight property.
-        /// TODO Update documentation:
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// This property's value is broadcasted by the Messenger's default instance when it changes.
-        /// </summary>
-        public double LoadRight
-        {
-            get
-            {
-                return Condition.Value[0];
-            }
-
-            set
-            {
-                if (Condition.Value[0] == value)
-                {
-                    return;
-                }
-
-                Condition.Value[0] = value;
-
-                // Update bindings, no broadcast
-                RaisePropertyChanged(LoadRightPropertyName);
-            }
-        }
-
-    }
+    
 }

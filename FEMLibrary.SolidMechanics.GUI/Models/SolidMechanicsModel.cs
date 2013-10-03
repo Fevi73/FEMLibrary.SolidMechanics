@@ -25,7 +25,8 @@ namespace FEMLibrary.SolidMechanics.GUI.Models
             Model = new Model();
         }
 
-        public void Copy(SolidMechanicsModel model) {
+        public void Copy(SolidMechanicsModel model) 
+        {
             VerticalElements = model.VerticalElements;
             HorizontalElements = model.HorizontalElements;
             Model.Copy(model.Model);
