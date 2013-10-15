@@ -239,5 +239,19 @@ namespace MatrixLibrary
             }
             return cuttedVector;
         }
+
+        public double Max()
+        {
+            double max = Math.Abs(vector[0]);
+            for (int i = 1; i < vector.Length; i++)
+            {
+                if (max < Math.Abs(vector[i]))
+                {
+                    max = Math.Abs(vector[i]);
+                }
+
+            }
+            return max;
+        }
     }
 }

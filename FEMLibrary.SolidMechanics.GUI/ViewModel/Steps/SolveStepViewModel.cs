@@ -64,7 +64,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// </summary>
         public const string MaxIterationsPropertyName = "MaxIterations";
 
-        private double maxIterations = 30;
+        private int maxIterations = 30;
 
         /// <summary>
         /// Gets the MaxIterations property.
@@ -72,7 +72,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// Changes to that property's value raise the PropertyChanged event. 
         /// This property's value is broadcasted by the Messenger's default instance when it changes.
         /// </summary>
-        public double MaxIterations
+        public int MaxIterations
         {
             get
             {
@@ -217,8 +217,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                 //Solver solver = new NewmarkVibrationNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 5, 50);
 
                 //Solver solver = new FreeVibrationsNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 2, 50);
-                
-                Solver solver = new FreeVibrationsLinearSolver(solidMechanicsModel.Model, mesh, error);
+
+                Solver solver = new FreeVibrationsNonLinearSolver(solidMechanicsModel.Model, mesh, error, 1, maxIterations);
 
                 //Solver solver = new StationaryNonlinear2DSolver(_solidMechanicsModel.Model, mesh, _error, 20);
 

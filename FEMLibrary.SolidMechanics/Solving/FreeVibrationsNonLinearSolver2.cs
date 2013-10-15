@@ -16,22 +16,24 @@ using System.IO;
 
 namespace FEMLibrary.SolidMechanics.Solving
 {
-    public class FreeVibrationsNonLinearSolver:Solver
+    public class FreeVibrationsNonLinearSolver2:Solver
     {
-        public FreeVibrationsNonLinearSolver(Model model, Mesh mesh, double error, double amplitude, int maxIterations)
+        public FreeVibrationsNonLinearSolver2(Model model, Mesh mesh, double error, Vector init, double maxTime, int intervalsTime)
             : base(model, mesh)
         {
             _error = error;
-            _amplitude = amplitude;
-            _maxIterations = maxIterations;
-            _indeciesToDelete = new List<int>();
+            _init = init;
+            _maxTime = maxTime;
+            _intervalsTime = intervalsTime;
         }
-        private double _error;
-        private double _amplitude;
-        private int _maxIterations;
-        private Vector previousU;
-        private List<int> _indeciesToDelete;
 
+
+        private double _maxTime;
+        private int _intervalsTime;
+
+        private Vector _init;
+
+        private double _error;
         private Matrix ConstMatrix;
 
         private double M1;
@@ -45,147 +47,100 @@ namespace FEMLibrary.SolidMechanics.Solving
         public override IEnumerable<INumericalResult> Solve(int resultsCount)
         {
             List<INumericalResult> results = new List<INumericalResult>();
-
+            
             if (_mesh.IsMeshGenerated)
             {
+                List<int> indeciesToDelete;
+                Matrix GeneralMatrix = GetGeneralMatrix(out indeciesToDelete);
                 
-                GetConstantMatrix();
 
-                _indeciesToDelete = getIndeciesWithStaticBoundaryConditions();
+                Vector init = InitValue();
 
-                Matrix StiffnessMatrix = GetStiffnessMatrix();
-                StiffnessMatrix = AsumeStaticBoundaryConditions(StiffnessMatrix, _indeciesToDelete);
-
-                Matrix MassMatrix = GetMassMatrix();
-                MassMatrix = AsumeStaticBoundaryConditions(MassMatrix, _indeciesToDelete);
-
+                CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.HeunMethodSolve((t,v)=>GeneralMatrix*v, init, _maxTime, _intervalsTime);
+                //CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.AdamsBashforthMethodsSolve((t, v) => GeneralMatrix*v, init, _maxTime, _intervalsTime);
+                //CauchyProblemResult cauchyProblemResult = CauchyProblemSolver.GirMethodsSolve((t, v) => GeneralMatrix*v, init, _maxTime, _intervalsTime);
                 
-#if (ALL_LAMBDAS)
-                Vector firstEigenVector = null;
-                double[] lambdas = null;
-                Vector[] eigenVectors = null;
-                int iterations = 0;
-                do
-                {
-                    if (eigenVectors != null)
-                    {
-                        firstEigenVector = eigenVectors[0];
-                    }
-                    else 
-                    {
-                        firstEigenVector = new Vector(StiffnessMatrix.CountRows);
-                    }
-
-                    /*double max = firstEigenVector.Max();
-                    if (max > 0)
-                    {
-                        double amplitudeCoef = _amplitude / max;
-                        firstEigenVector = amplitudeCoef * firstEigenVector;
-                    }*/
-
-                    Matrix NonlinearMatrix = GetNonlinearMatrix(firstEigenVector);
-                    NonlinearMatrix = AsumeStaticBoundaryConditions(NonlinearMatrix, _indeciesToDelete);
-
-                    Matrix K = StiffnessMatrix + NonlinearMatrix;
-                    //Vector lambdas = StiffnessMatrix.GetEigenvalues(out eigenVectors, out iterations, _error);
-                    lambdas = K.GetEigenvalueSPAlgorithm(MassMatrix, out eigenVectors, _error, resultsCount);
-                    iterations++;
-                    //Debug.WriteLine(iterations);
+                SemidiscreteVibrationsNumericalResult result = new SemidiscreteVibrationsNumericalResult(_mesh.Elements, cauchyProblemResult.DeltaTime, _maxTime);
+                foreach (Vector v in cauchyProblemResult.Results) {
+                    AddToResult(result, v, indeciesToDelete);
                 }
-                while ((Vector.Norm(eigenVectors[0] - firstEigenVector) > _error) &&(iterations < _maxIterations));
 
-                for (int i = 0; i < lambdas.Length; i++)
-                {
-                    Vector eigenVector = eigenVectors[i];
-                    eigenVector = addStaticPoints(eigenVector, _indeciesToDelete);
-                    EigenValuesNumericalResult result = new EigenValuesNumericalResult(_mesh.Elements, eigenVector, Math.Sqrt(lambdas[i]));
-                    results.Add(result);
-                }
-#else
-                Vector eigenVector;
-                double lambda = StiffnessMatrix.GetMaxEigenvalueSPAlgorithm(out eigenVector, _error);
-                addStaticPoints(eigenVector);
-
-                EigenValuesNumericalResult result = new EigenValuesNumericalResult(_mesh.Elements, eigenVector, Math.Sqrt(lambda / _model.Material.Rho));
                 results.Add(result);
-#endif
             }
             return results;
         }
 
-        #region Nonliear Stiffness Matrix
-        private Matrix GetNonlinearMatrix(Vector u)
+        private Matrix GetGeneralMatrix(out List<int> indeciesToDelete)
         {
-            Vector uWithStaticPoints = addStaticPoints(u, _indeciesToDelete);
-            Matrix NonlinearMatrix = new Matrix(_mesh.Nodes.Count * 2, _mesh.Nodes.Count * 2);
-            foreach (IFiniteElement element in _mesh.Elements)
+            
+            GetConstantMatrix();
+            Matrix StiffnessMatrix = AsumeStaticBoundaryConditions(GetStiffnessMatrix(), out indeciesToDelete);
+            indeciesToDelete.Clear();
+            Matrix MassMatrix = AsumeStaticBoundaryConditions(GetMassMatrix(), out indeciesToDelete); //GetMassMatrix();
+            Matrix G = (-1)*Matrix.Transpose( MassMatrix.Inverse() * StiffnessMatrix);
+            //G = AsumeStaticBoundaryConditions(G, out indeciesToDelete);
+            using (StreamWriter sw = new StreamWriter("general.txt"))
             {
-                Matrix localMassMatrix = GetLocalNonlinearMatrix(element, uWithStaticPoints);
+                sw.WriteLine(G.ToString());
+            }
 
-                for (int i = 0; i < element.Count; i++)
+            int halfN = G.CountColumns;
+            int n = halfN * 2;
+
+            Matrix matrix = new Matrix(n, n);
+            for (int i = halfN; i < n; i++)
+            {
+                matrix[i - halfN, i] = 1;
+            }
+
+            for (int i = halfN; i < n; i++)
+            {
+                for (int j = 0; j < halfN; j++)
                 {
-                    for (int j = 0; j < element.Count; j++)
-                    {
-                        NonlinearMatrix[2 * element[i].Index, 2 * element[j].Index] += localMassMatrix[2 * i, 2 * j];
-                        NonlinearMatrix[2 * element[i].Index + 1, 2 * element[j].Index] += localMassMatrix[2 * i + 1, 2 * j];
-                        NonlinearMatrix[2 * element[i].Index, 2 * element[j].Index + 1] += localMassMatrix[2 * i, 2 * j + 1];
-                        NonlinearMatrix[2 * element[i].Index + 1, 2 * element[j].Index + 1] += localMassMatrix[2 * i + 1, 2 * j + 1];
-                    }
+                    matrix[i, j] = G[i - halfN, j];
                 }
             }
 
-            return NonlinearMatrix;
+            return matrix;
         }
 
-        private Matrix GetLocalNonlinearMatrix(IFiniteElement element, Vector u)
+        private Vector InitValue()
         {
-            elementCurrent = element;
-            previousU = u;
-
-            Matrix localMassMatrix = Integration.GaussianIntegrationMatrix(LocalNonlinearMatrixFunction);
-
-            return localMassMatrix;
+            Vector u = AsumeStaticBoundaryConditionsToVector(_init);
+            Vector u1 = new Vector(u.Length);
+            return GetV(u, u1);
         }
 
-        private Matrix LocalNonlinearMatrixFunction(double ksi, double eta)
+        private void AddToResult(SemidiscreteVibrationsNumericalResult result, Vector V, List<int> indeciesToDelete)
         {
-            Matrix derivativeMatrix = GetLocalDerivativeMatrix(elementCurrent, ksi, eta);
-
-            Matrix derivativeUMatrix = GetLocalUDerivativeMatrix(previousU, elementCurrent, ksi, eta);
-
-            JacobianRectangular J = new JacobianRectangular();
-            J.Element = elementCurrent;
-
-            return derivativeMatrix * ConstMatrix * Matrix.Transpose(derivativeUMatrix) * Matrix.Transpose(derivativeMatrix) * J.GetJacobianDeterminant(ksi, eta);
+            Vector u = GetU(V);
+            addStaticPoints(u, indeciesToDelete);
+            result.AddResult(u);
         }
 
-
-
-        private Matrix GetLocalUDerivativeMatrix(Vector previousU, IFiniteElement elementCurrent, double ksi, double eta)
+        private Vector GetU(Vector v)
         {
-            Matrix derivativeMatrix = GetLocalDerivativeMatrix(elementCurrent, ksi, eta);
-            Vector uOnElement = new Vector(8);
-            if (previousU != null)
+            Vector u = new Vector(v.Length / 2);
+            for (int i = 0; i < u.Length; i++) {
+                u[i] = v[i];
+            }
+            return u;
+        }
+
+        private Vector GetV(Vector u, Vector u1)
+        {
+            Vector v = new Vector(u.Length + u1.Length);
+            for (int i = 0; i < u.Length; i++)
             {
-                for (int i = 0; i < elementCurrent.Count; i++)
-                {
-                    uOnElement[2 * i] = previousU[2 * elementCurrent[i].Index];
-                    uOnElement[2 * i + 1] = previousU[2 * elementCurrent[i].Index + 1];
-                }
+                v[i] = u[i];
             }
 
-            Vector uDerivative = Matrix.Transpose(derivativeMatrix) * uOnElement;
-            Matrix derivativeUMatrix = new Matrix(4, 4);
-            derivativeUMatrix[0, 0] = derivativeUMatrix[2, 2] = uDerivative[0];
-            derivativeUMatrix[1, 1] = derivativeUMatrix[3, 3] = uDerivative[1];
-            derivativeUMatrix[3, 0] = derivativeUMatrix[1, 2] = uDerivative[2];
-            derivativeUMatrix[2, 1] = derivativeUMatrix[0, 3] = uDerivative[3];
-            return derivativeUMatrix;
-
+            for (int i = 0; i < u1.Length; i++)
+            {
+                v[u.Length + i] = u1[i];
+            }
+            return v;
         }
-
-
-        #endregion
 
         #region MassMatrix
 
@@ -243,6 +198,8 @@ namespace FEMLibrary.SolidMechanics.Solving
 
         #endregion
 
+        #region Const Matrix
+        
         private Matrix GetConstantMatrix()
         {
             ConstMatrix = new Matrix(4, 4);
@@ -253,14 +210,18 @@ namespace FEMLibrary.SolidMechanics.Solving
             return ConstMatrix;
         }
 
+        #endregion
+
         #region Boundary conditions
 
-        private Vector AsumeStaticBoundaryConditionsToVector(Vector result, List<int> indeciesToDelete)
+        private Vector AsumeStaticBoundaryConditionsToVector(Vector result)
         {
-            indeciesToDelete.Sort();
-            indeciesToDelete.Reverse();
+            List<int> indecies = getIndeciesWithStaticBoundaryConditions();
 
-            foreach (int index in indeciesToDelete)
+            indecies.Sort();
+            indecies.Reverse();
+
+            foreach (int index in indecies)
             {
                 result = Vector.Cut(result, index);
             }
@@ -268,13 +229,14 @@ namespace FEMLibrary.SolidMechanics.Solving
         }
 
         //static == fixed
-        private Matrix AsumeStaticBoundaryConditions(Matrix stiffnessMatrix, List<int> indeciesToDelete)
+        private Matrix AsumeStaticBoundaryConditions(Matrix stiffnessMatrix, out List<int> indeciesToDelete)
         {
+            indeciesToDelete = getIndeciesWithStaticBoundaryConditions();
+            
             indeciesToDelete.Sort();
             indeciesToDelete.Reverse();
 
-            foreach (int index in indeciesToDelete)
-            {
+            foreach (int index in indeciesToDelete) {
                 stiffnessMatrix = Matrix.Cut(stiffnessMatrix, index, index);
             }
             return stiffnessMatrix;
@@ -328,15 +290,13 @@ namespace FEMLibrary.SolidMechanics.Solving
             return indecies;
         }
 
-        private Vector addStaticPoints(Vector resultVector, List<int> indeciesToDelete)
+        private void addStaticPoints(Vector resultVector, List<int> indeciesToDelete)
         {
-            Vector res = new Vector(resultVector);
             indeciesToDelete.Sort();
             foreach (int index in indeciesToDelete)
             {
-                res.Insert(0, index);
+                resultVector.Insert(0, index);
             }
-            return res;
         }
         #endregion
 
@@ -423,7 +383,6 @@ namespace FEMLibrary.SolidMechanics.Solving
 
         #endregion
 
-        
 
     }
 }

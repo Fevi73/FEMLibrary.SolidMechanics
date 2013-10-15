@@ -65,11 +65,12 @@
     <Compile Include="Results\CauchyProblemResult.cs" />
     <Compile Include="Results\SemidiscreteVibrationsNumericalResult.cs" />
     <Compile Include="Results\EigenValuesNumericalResult.cs" />
+    <Compile Include="Solving\FreeVibrationsNonLinearSolver.cs" />
     <Compile Include="Solving\NewmarkVibrationNonLinearSolver.cs" />
     <Compile Include="Solving\FreeVibrationsLinearSolver.cs" />
     <Compile Include="Results\IResult.cs" />
     <Compile Include="Results\StaticNumericalResult.cs" />
-    <Compile Include="Solving\FreeVibrationsNonLinearSolver.cs">
+    <Compile Include="Solving\FreeVibrationsNonLinearSolver2.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Utils\ResultHelper.cs" />
