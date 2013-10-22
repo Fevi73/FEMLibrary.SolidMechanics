@@ -23,7 +23,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         {
             model = new SolidMechanicsModel(new Rectangle(0, 0));
             Steps = getSteps();
-            SelectStep(Steps[0]);
+            activeStep = Steps[0];
+            activeStep.IsCurrent = true;
 
             MoveNextCommand = new RelayCommand(MoveNext, CanMoveNext);
             MovePreviousCommand = new RelayCommand(MovePrevious, CanMovePrevious);
@@ -39,6 +40,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
             steps.Add(new MaterialStepViewModel(model));
             steps.Add(new PointSettingsStepViewModel(model));
             steps.Add(new BoundarySettingsStepViewModel(model));
+            steps.Add(new InitialSettingsStepViewModel(model));
             steps.Add(new RectangleMeshSettingsStepViewModel(model));
             steps.Add(new SolveStepViewModel(model));
 
@@ -78,7 +80,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
             }
         }
 
-        private void SelectStep(WizardStepViewModelBase step)
+        public void SelectStep(WizardStepViewModelBase step)
         {
             step.IsCurrent = true;
             ActiveStep = step;

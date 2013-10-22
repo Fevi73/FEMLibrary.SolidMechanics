@@ -210,16 +210,18 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
+                //Solver solver = new FreeVibrationsLinearSolver(solidMechanicsModel.Model, mesh, error, solidMechanicsModel.MaxAmplitude);
+
+                Solver solver = new FreeVibrationsNonLinearSolver(solidMechanicsModel.Model, mesh, error, solidMechanicsModel.MaxAmplitude, maxIterations);
+
                 /*Solver initSolver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
                 IEnumerable<INumericalResult> initResults = initSolver.Solve(1);
                 EigenValuesNumericalResult res = initResults.First() as EigenValuesNumericalResult;*/
 
+                //Solver solver = new FreeVibrationsNonLinearSolver2(_solidMechanicsModel.Model, mesh, _error, res.U, 2, 50);
+                
                 //Solver solver = new NewmarkVibrationNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 5, 50);
-
-                //Solver solver = new FreeVibrationsNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 2, 50);
-
-                Solver solver = new FreeVibrationsNonLinearSolver(solidMechanicsModel.Model, mesh, error, 1, maxIterations);
-
+                
                 //Solver solver = new StationaryNonlinear2DSolver(_solidMechanicsModel.Model, mesh, _error, 20);
 
                 //IResult analiticalResult = new AnaliticalResultRectangleWithOneSideFixed(_solidMechanicsModel.Model);

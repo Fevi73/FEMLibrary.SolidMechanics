@@ -66,6 +66,7 @@
     <Compile Include="Results\SemidiscreteVibrationsNumericalResult.cs" />
     <Compile Include="Results\EigenValuesNumericalResult.cs" />
     <Compile Include="Solving\FreeVibrationsNonLinearSolver.cs" />
+    <Compile Include="Solving\MechanicalPlate2DSolver.cs" />
     <Compile Include="Solving\NewmarkVibrationNonLinearSolver.cs" />
     <Compile Include="Solving\FreeVibrationsLinearSolver.cs" />
     <Compile Include="Results\IResult.cs" />

@@ -14,6 +14,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
             : base("Point Settings", model)
         {
             SetPointConditions(solidMechanicsModel);
+            currentPoint = Points[0];
         }
 
         private void SetPointConditions(SolidMechanicsModel model)
@@ -25,7 +26,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                 Points.Add(new PointViewModel(i, point, model.Model.PointConditions[point]));
                 i++;
             }
-            CurrentPoint = Points[0];
+            
         }
 
         public ObservableCollection<PointViewModel> Points { get; private set; }
@@ -75,6 +76,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
             }
 
             SetPointConditions(solidMechanicsModel);
+            CurrentPoint = Points[0];
         }
     }
 

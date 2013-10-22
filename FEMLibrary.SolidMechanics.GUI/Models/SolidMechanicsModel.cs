@@ -12,6 +12,7 @@ namespace FEMLibrary.SolidMechanics.GUI.Models
     public class SolidMechanicsModel
     {
         public Model Model { get; private set; }
+        public double MaxAmplitude { get; set; }
         public int VerticalElements { get; set; }
         public int HorizontalElements { get; set; }
 
@@ -29,6 +30,7 @@ namespace FEMLibrary.SolidMechanics.GUI.Models
         {
             VerticalElements = model.VerticalElements;
             HorizontalElements = model.HorizontalElements;
+            MaxAmplitude = model.MaxAmplitude;
             Model.Copy(model.Model);
         }
 

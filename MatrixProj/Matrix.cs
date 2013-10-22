@@ -18,16 +18,16 @@ namespace MatrixLibrary
             this.m = m;
 
         }
-        public Matrix(Matrix m)
+        public Matrix(Matrix matrixToCopy)
         {
-            this.n = m.n;
-            this.m = m.m;
+            this.n = matrixToCopy.n;
+            this.m = matrixToCopy.m;
             matrix = new double[this.n, this.m];
             for (int i = 0; i < this.n; i++)
             {
                 for (int j = 0; j < this.m; j++)
                 {
-                    matrix[i, j] = m[i, j];
+                    matrix[i, j] = matrixToCopy[i, j];
                 }
             }
         }

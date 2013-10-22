@@ -13,6 +13,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         public BoundarySettingsStepViewModel(SolidMechanicsModel model):base("Boundary Settings", model)
         {
             SetBoundaryConditions(solidMechanicsModel);
+            currentEdge = Edges[0];
         }
 
         public void SetBoundaryConditions(SolidMechanicsModel model) 
@@ -24,7 +25,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                 Edges.Add(new EdgeViewModel(i, edge, model.Model.BoundaryConditions[edge]));
                 i++;
             }
-            CurrentEdge = Edges[0];
+            
         }
 
         public ObservableCollection<EdgeViewModel> Edges { get; private set; }
@@ -73,6 +74,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                 solidMechanicsModel.Model.BoundaryConditions.Add(edge, model.Model.BoundaryConditions[edge]);
             }
             SetBoundaryConditions(model);
+            CurrentEdge = Edges[0];
         }
     }
 

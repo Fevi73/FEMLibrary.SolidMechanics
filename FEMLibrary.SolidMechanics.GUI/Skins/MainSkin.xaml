@@ -20,4 +20,8 @@
     <DataTemplate DataType="{x:Type steps:SolveStepViewModel}">
         <views:SolveStepView/>
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type steps:InitialSettingsStepViewModel}">
+        <views:InitialSettingsStepView/>
+    </DataTemplate>
 </ResourceDictionary>

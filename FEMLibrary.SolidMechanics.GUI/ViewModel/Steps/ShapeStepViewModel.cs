@@ -13,7 +13,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         public ShapeStepViewModel(SolidMechanicsModel model):base("Shape", model)
         {
             rectangle = solidMechanicsModel.Model.Shape as Rectangle;
-            IsValid = rectangle != null;
+            isValid = rectangle != null;
         }
 
         public override void RefreshProperties(SolidMechanicsModel model)
@@ -31,7 +31,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// </summary>
         public const string IsValidPropertyName = "IsValid";
 
-        private bool isValid = false;
+        private bool isValid;
 
         /// <summary>
         /// Gets the IsValid property.
