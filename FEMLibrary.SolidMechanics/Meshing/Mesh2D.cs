@@ -6,9 +6,9 @@ namespace FEMLibrary.SolidMechanics.Meshing
 {
     public abstract class Mesh2D:Mesh
     {
-        public List<Segment> Segments { get; protected set; }
-        protected List<KeyValuePair<FiniteElementNode, Edge>> boundaryNodes;
-        protected List<KeyValuePair<Segment, Edge>> boundarySegments;
+        public List<FiniteElementRectangleEdge> Segments { get; protected set; }
+        
+        protected List<KeyValuePair<FiniteElementRectangleEdge, Edge>> boundarySegments;
 
         private bool isSettingsSetted;
         public BoundaryMeshSettings BoundaryMeshSettings { get; protected set; }
@@ -31,28 +31,17 @@ namespace FEMLibrary.SolidMechanics.Meshing
         protected override void initMeshElements()
         {
             base.initMeshElements();
-            Segments = new List<Segment>();
+            Segments = new List<FiniteElementRectangleEdge>();
             boundaryNodes = new List<KeyValuePair<FiniteElementNode, Edge>>();
-            boundarySegments = new List<KeyValuePair<Segment, Edge>>();
+            boundarySegments = new List<KeyValuePair<FiniteElementRectangleEdge, Edge>>();
         }
 
-        public List<FiniteElementNode> GetNodesOnEdge(Edge edge)
-        {
-            List<FiniteElementNode> nodes = new List<FiniteElementNode>();
-            foreach(KeyValuePair<FiniteElementNode, Edge> pair in boundaryNodes)
-            {
-                if (pair.Value == edge)
-                {
-                    nodes.Add(pair.Key);
-                }
-            }
-            return nodes;
-        }
+        
 
-        public List<Segment> GetSegmentsOnEdge(Edge edge)
+        public List<FiniteElementRectangleEdge> GetSegmentsOnEdge(Edge edge)
         {
-            List<Segment> segments = new List<Segment>();
-            foreach (KeyValuePair<Segment, Edge> pair in boundarySegments)
+            List<FiniteElementRectangleEdge> segments = new List<FiniteElementRectangleEdge>();
+            foreach (KeyValuePair<FiniteElementRectangleEdge, Edge> pair in boundarySegments)
             {
                 if (pair.Value == edge)
                 {
@@ -65,9 +54,9 @@ namespace FEMLibrary.SolidMechanics.Meshing
         protected void AddBoundaryNode(FiniteElementNode node, Edge edge) {
             boundaryNodes.Add(new KeyValuePair<FiniteElementNode, Edge>(node, edge));
         }
-        protected void AddBoundarySegment(Segment segment, Edge edge)
+        protected void AddBoundarySegment(FiniteElementRectangleEdge FiniteElementRectangleEdge, Edge edge)
         {
-            boundarySegments.Add(new KeyValuePair<Segment, Edge>(segment, edge));
+            boundarySegments.Add(new KeyValuePair<FiniteElementRectangleEdge, Edge>(FiniteElementRectangleEdge, edge));
         }
 
         public override void Generate()

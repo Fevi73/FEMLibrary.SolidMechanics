@@ -39,8 +39,8 @@ namespace FEMLibrary.SolidMechanics.Meshing
                 int segmentsCount = nodes.Count - 1;
                 for (int i = 0; i < segmentsCount; i++)
                 {
-                    FiniteElementRectangleEdge segment = new FiniteElementRectangleEdge(nodes[i], nodes[i + 1]);
-                    AddBoundarySegment(segment, edge);
+                    FiniteElementRectangleEdge FiniteElementRectangleEdge = new FiniteElementRectangleEdge(nodes[i], nodes[i + 1]);
+                    AddBoundarySegment(FiniteElementRectangleEdge, edge);
                 }
             }
         }

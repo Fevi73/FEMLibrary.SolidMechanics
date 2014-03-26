@@ -1,4 +1,5 @@
-﻿using FEMLibrary.SolidMechanics.Geometry;
+﻿#define ALL_LAMBDAS
+using FEMLibrary.SolidMechanics.Geometry;
 using FEMLibrary.SolidMechanics.Meshing;
 using FEMLibrary.SolidMechanics.NumericalUtils;
 using FEMLibrary.SolidMechanics.Physics;
@@ -30,8 +31,19 @@ namespace FEMLibrary.SolidMechanics.Solving
         protected Vector previousU;
         protected ICollection<int> indeciesToDelete;
 
-        public Matrix GetConstantMatrix(double E, double v, double h)
+        #region Const Matrix
+        public Matrix GetConstantMatrix()
         {
+            CylindricalPlate plate = _model.Shape as CylindricalPlate;
+
+            double hInv = 1 / plate.Height;
+
+            double K = plate.Curvature;
+
+            double E = _model.Material.E[0]; 
+            double v = _model.Material.v[0,0];
+            double h = plate.Height;
+
             Matrix A = new Matrix(9, 9);
 
             A[0, 0] = A[0, 2] = A[1, 1] = A[1, 2] = A[2, 0] = A[2, 1] = A[3, 3] = A[3, 5] = A[4, 4] = A[4, 5] = A[5, 3] = A[5, 4] = (E * h * (1 - v)) / (3 * (1 + v) * (1 - 2 * v));
@@ -47,19 +59,15 @@ namespace FEMLibrary.SolidMechanics.Solving
             A[6, 7] = A[7, 6] = (E * h) / (12 * (1 + v));
             A[8, 8] = (4 * E * h) / (15 * (1 + v));
 
-            Matrix D = matrixD();
+            Matrix D = matrixD(K, hInv);
 
             ConstMatrix = Matrix.Transpose(D) * A * D;
             return ConstMatrix;
         }
 
-        private Matrix matrixD()
+        private Matrix matrixD(double K, double hInv)
         {
-            CylindricalPlate plate = _model.Shape as CylindricalPlate;
-
-            double hInv = 1 / plate.Height;
-
-            double K = plate.Curvature;
+            
             Matrix D = new Matrix(9, 12);
             D[0, 1] = D[1, 3] = D[2, 5] = D[6, 7] = D[7, 9] = D[8, 11] = 1;
             D[0, 6] = D[1, 8] = D[2, 10] = D[8, 4] = K;
@@ -74,6 +82,8 @@ namespace FEMLibrary.SolidMechanics.Solving
             D[4, 10] = D[7, 4] = -4 * hInv - 2 * K;
             return D;
         }
+
+        #endregion
 
         #region MassMatrix
 
@@ -279,6 +289,7 @@ namespace FEMLibrary.SolidMechanics.Solving
 
         #endregion
     */
+
         #region Boundary conditions
 
         protected Vector applyStaticBoundaryConditionsToVector(Vector result, ICollection<int> indeciesToDelete)
@@ -317,13 +328,12 @@ namespace FEMLibrary.SolidMechanics.Solving
                     IEnumerable<FiniteElementNode> nodes = _mesh.GetNodesOnEdge(edge);
                     foreach (FiniteElementNode node in nodes)
                     {
-                        if (!indecies.Contains(2 * node.Index))
+                        for (int i = 0; i < 6; i++)
                         {
-                            indecies.Add(2 * node.Index);
-                        }
-                        if (!indecies.Contains(2 * node.Index + 1))
-                        {
-                            indecies.Add(2 * node.Index + 1);
+                            if (!indecies.Contains(6 * node.Index + i))
+                            {
+                                indecies.Add(6 * node.Index + i);
+                            }
                         }
                     }
                 }
@@ -338,13 +348,12 @@ namespace FEMLibrary.SolidMechanics.Solving
                     FiniteElementNode node = _mesh.GetNodeOnPoint(point);
                     if (node != null)
                     {
-                        if (!indecies.Contains(2 * node.Index))
+                        for (int i = 0; i < 6; i++)
                         {
-                            indecies.Add(2 * node.Index);
-                        }
-                        if (!indecies.Contains(2 * node.Index + 1))
-                        {
-                            indecies.Add(2 * node.Index + 1);
+                            if (!indecies.Contains(6 * node.Index + i))
+                            {
+                                indecies.Add(6 * node.Index + i);
+                            }
                         }
                     }
                 }
@@ -406,7 +415,36 @@ namespace FEMLibrary.SolidMechanics.Solving
 
         public override IEnumerable<INumericalResult> Solve(int resultsCount)
         {
-            throw new NotImplementedException();
+            ICollection<INumericalResult> results = new List<INumericalResult>();
+
+            if (_mesh.IsMeshGenerated)
+            {
+                GetConstantMatrix();
+
+                indeciesToDelete = getIndeciesWithStaticBoundaryConditions();
+
+                Matrix StiffnessMatrix = GetStiffnessMatrix();
+                StiffnessMatrix = applyStaticBoundaryConditions(StiffnessMatrix, indeciesToDelete);
+
+                Matrix MassMatrix = GetMassMatrix();
+                MassMatrix = applyStaticBoundaryConditions(MassMatrix, indeciesToDelete);
+
+#if (ALL_LAMBDAS)
+                Vector[] eigenVectors;
+                double[] lambdas = StiffnessMatrix.GetEigenvalueSPAlgorithm(MassMatrix, out eigenVectors, _error, resultsCount);
+
+                results = generateVibrationResults(lambdas, eigenVectors);
+
+#else
+                Vector eigenVector;
+                double lambda = StiffnessMatrix.GetMaxEigenvalueSPAlgorithm(out eigenVector, _error);
+                addStaticPoints(eigenVector, indeciesToDelete);
+
+                EigenValuesNumericalResult result = new EigenValuesNumericalResult(_mesh.Elements, eigenVector, Math.Sqrt(lambda / _model.Material.Rho));
+                results.Add(result);
+#endif
+            }
+            return results;
         }
     }
 }

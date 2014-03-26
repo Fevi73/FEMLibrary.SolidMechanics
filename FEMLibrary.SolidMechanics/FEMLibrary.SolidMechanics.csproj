@@ -42,15 +42,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Geometry\FiniteElementSegment.cs" />
+    <Compile Include="Geometry\FiniteElementNode.cs" />
     <Compile Include="Geometry\CylindricalPlate.cs" />
     <Compile Include="Geometry\FiniteElementRectangle.cs" />
-    <Compile Include="Geometry\IFiniteElement.cs" />
-    <Compile Include="Geometry\FiniteElementNode.cs" />
-    <Compile Include="Geometry\Rectangle.cs" />
     <Compile Include="Geometry\FiniteElementRectangleEdge.cs" />
+    <Compile Include="Geometry\IFiniteElement.cs" />
+    <Compile Include="Geometry\Rectangle.cs" />
     <Compile Include="Meshing\BoundaryMesh.cs" />
     <Compile Include="Meshing\BoundaryMeshSettings.cs" />
-    <Compile Include="Meshing\LinearMesh.cs" />
     <Compile Include="Meshing\Mesh1D.cs" />
     <Compile Include="Meshing\Mesh2D.cs" />
     <Compile Include="Meshing\Mesh.cs" />

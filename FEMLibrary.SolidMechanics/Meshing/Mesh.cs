@@ -9,6 +9,8 @@ namespace FEMLibrary.SolidMechanics.Meshing
         public List<FiniteElementNode> Nodes { get; protected set; }
         public List<IFiniteElement> Elements { get; protected set; }
 
+        protected List<KeyValuePair<FiniteElementNode, Edge>> boundaryNodes;
+
         public bool IsMeshGenerated { get; protected set; }
 
         protected Mesh()
@@ -41,6 +43,19 @@ namespace FEMLibrary.SolidMechanics.Meshing
                 }
             }
             return node;
+        }
+
+        public List<FiniteElementNode> GetNodesOnEdge(Edge edge)
+        {
+            List<FiniteElementNode> nodes = new List<FiniteElementNode>();
+            foreach (KeyValuePair<FiniteElementNode, Edge> pair in boundaryNodes)
+            {
+                if (pair.Value == edge)
+                {
+                    nodes.Add(pair.Key);
+                }
+            }
+            return nodes;
         }
 
 

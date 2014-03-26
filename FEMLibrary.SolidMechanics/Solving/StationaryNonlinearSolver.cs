@@ -93,13 +93,13 @@ namespace FEMLibrary.SolidMechanics.Solving
                 else
                 {
                     IEnumerable<FiniteElementRectangleEdge> segments = _mesh.GetSegmentsOnEdge(edge);
-                    foreach (FiniteElementRectangleEdge segment in segments)
+                    foreach (FiniteElementRectangleEdge FiniteElementRectangleEdge in segments)
                     {
-                        Vector localVector = GetLocalTotalVector(segment, boundaryCondition.Value);
-                        for (int i = 0; i < segment.Count; i++)
+                        Vector localVector = GetLocalTotalVector(FiniteElementRectangleEdge, boundaryCondition.Value);
+                        for (int i = 0; i < FiniteElementRectangleEdge.Count; i++)
                         {
-                            totalVector[2 * segment[i].Index] += localVector[2 * i];
-                            totalVector[2 * segment[i].Index + 1] += localVector[2 * i + 1];
+                            totalVector[2 * FiniteElementRectangleEdge[i].Index] += localVector[2 * i];
+                            totalVector[2 * FiniteElementRectangleEdge[i].Index + 1] += localVector[2 * i + 1];
                         }
                     }
                 }
@@ -140,11 +140,11 @@ namespace FEMLibrary.SolidMechanics.Solving
         }
 
         #region Local Vector
-        private Vector GetLocalTotalVector(FiniteElementRectangleEdge segment, Vector load)
+        private Vector GetLocalTotalVector(FiniteElementRectangleEdge FiniteElementRectangleEdge, Vector load)
         {
             Vector vector = new Vector(4);
-            vector[1] = vector[3] = (load[2] * segment.Length()) / 2.0;
-            vector[0] = vector[2] = (load[0] * segment.Length()) / 2.0;
+            vector[1] = vector[3] = (load[2] * FiniteElementRectangleEdge.Length()) / 2.0;
+            vector[0] = vector[2] = (load[0] * FiniteElementRectangleEdge.Length()) / 2.0;
             return vector;
         }
 
