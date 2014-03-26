@@ -90,9 +90,11 @@
     <Compile Include="Controls\ShapeDrawingCanvas.cs" />
     <Compile Include="Converters\BoundaryConditionTypeToVisibilityConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
-    <Compile Include="Models\ResultItem.cs" />
     <Compile Include="Models\SolidMechanicsModel.cs" />
+    <Compile Include="Models\ResultItem.cs" />
+    <Compile Include="Models\SolidMechanicsModel2D.cs" />
     <Compile Include="ViewModel\Steps\BoundarySettingsStepViewModel.cs" />
+    <Compile Include="ViewModel\Steps\CylindricalShapeStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\InitialSettingsStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\EdgeViewModel.cs" />
     <Compile Include="ViewModel\Steps\PointSettingsStepViewModel.cs" />
@@ -104,6 +106,9 @@
     <Compile Include="ViewModel\WizardStepViewModelBase.cs" />
     <Compile Include="Views\BoundarySettingsStepView.xaml.cs">
       <DependentUpon>BoundarySettingsStepView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CylindricalShapeStepView.xaml.cs">
+      <DependentUpon>CylindricalShapeStepView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\InitialSettingsStepView.xaml.cs">
       <DependentUpon>InitialSettingsStepView.xaml</DependentUpon>
@@ -146,6 +151,10 @@
     <Page Include="Views\BoundarySettingsStepView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CylindricalShapeStepView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\InitialSettingsStepView.xaml">
       <Generator>MSBuild:Compile</Generator>

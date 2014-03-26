@@ -21,7 +21,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// </summary>
         public SetupViewModel()
         {
-            model = new SolidMechanicsModel(new Rectangle(0, 0));
+            //model = new SolidMechanicsModel2D(new Rectangle(0, 0));
+            model = new SolidMechanicsModel(new CylindricalPlate(0, 0));
             Steps = getSteps();
             activeStep = Steps[0];
             activeStep.IsCurrent = true;
@@ -36,12 +37,14 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         {
             ObservableCollection<WizardStepViewModelBase> steps = new ObservableCollection<WizardStepViewModelBase>();
 
-            steps.Add(new ShapeStepViewModel(model));
+            //steps.Add(new ShapeStepViewModel(model));
+            steps.Add(new CylindricalShapeStepViewModel(model));
             steps.Add(new MaterialStepViewModel(model));
             steps.Add(new PointSettingsStepViewModel(model));
             steps.Add(new BoundarySettingsStepViewModel(model));
             steps.Add(new InitialSettingsStepViewModel(model));
-            steps.Add(new RectangleMeshSettingsStepViewModel(model));
+            //steps.Add(new RectangleMeshSettingsStepViewModel(model));
+            steps.Add(new MeshSettingsStepViewModel(model));
             steps.Add(new SolveStepViewModel(model));
 
             return steps;

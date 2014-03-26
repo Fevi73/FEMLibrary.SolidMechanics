@@ -13,9 +13,9 @@ using System.Windows;
 
 namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 {
-    public class SolveStepViewModel:WizardStepViewModelBase
+    public class Solve2DStepViewModel:WizardStepViewModelBase
     {
-        public SolveStepViewModel(SolidMechanicsModel model):base("Solve", model)
+        public Solve2DStepViewModel(SolidMechanicsModel model):base("Solve", model)
         {
             SolveCommand = new RelayCommand(Solve);
             Results = new ObservableCollection<INumericalResult>();
@@ -203,15 +203,28 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
         public void Solve()
         {
-            CylindricalPlate plate = solidMechanicsModel.Model.Shape as CylindricalPlate;
-            if (plate != null)
+            Rectangle rectangle = solidMechanicsModel.Model.Shape as Rectangle;
+            if (rectangle != null)
             {
-                LinearMesh mesh = new LinearMesh(plate, solidMechanicsModel.HorizontalElements);
+                RectangularMesh mesh = new RectangularMesh(rectangle, solidMechanicsModel.VerticalElements, solidMechanicsModel.HorizontalElements);
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
+                //Solver solver = new FreeVibrationsLinearSolver(solidMechanicsModel.Model, mesh, error, solidMechanicsModel.MaxAmplitude);
 
-                Solver solver = new CylindricalPlate1DSolver(solidMechanicsModel.Model, mesh, error, solidMechanicsModel.MaxAmplitude);
+                Solver solver = new FreeVibrationsNonLinearSolver(solidMechanicsModel.Model, mesh, error, solidMechanicsModel.MaxAmplitude, maxIterations);
+
+                /*Solver initSolver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
+                IEnumerable<INumericalResult> initResults = initSolver.Solve(1);
+                EigenValuesNumericalResult res = initResults.First() as EigenValuesNumericalResult;*/
+
+                //Solver solver = new FreeVibrationsNonLinearSolver2(_solidMechanicsModel.Model, mesh, _error, res.U, 2, 50);
+                
+                //Solver solver = new NewmarkVibrationNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 5, 50);
+                
+                //Solver solver = new StationaryNonlinear2DSolver(_solidMechanicsModel.Model, mesh, _error, 20);
+
+                //IResult analiticalResult = new AnaliticalResultRectangleWithOneSideFixed(_solidMechanicsModel.Model);
 
                 IEnumerable<INumericalResult> results = solver.Solve(maxResults);
                 

@@ -8,17 +8,50 @@ using FEMLibrary.SolidMechanics.Meshing;
 
 namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 {
-    public class MeshSettingsStepViewModel : WizardStepViewModelBase
+    public class RectangleMeshSettingsStepViewModel : WizardStepViewModelBase
     {
-        public MeshSettingsStepViewModel(SolidMechanicsModel model)
+        public RectangleMeshSettingsStepViewModel(SolidMechanicsModel model)
             : base("Mesh Settings", model)
         { }
 
         public override void RefreshProperties(SolidMechanicsModel model)
         {
+            VerticalElements = model.VerticalElements;
             HorizontalElements = model.HorizontalElements;
         }
 
+        /// <summary>
+        /// The <see cref="VerticalElements" /> property's name.
+        /// </summary>
+        public const string VerticalElementsPropertyName = "VerticalElements";
+
+        /// <summary>
+        /// Gets the VerticalElements property.
+        /// TODO Update documentation:
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// This property's value is broadcasted by the Messenger's default instance when it changes.
+        /// </summary>
+        public int VerticalElements
+        {
+            get
+            {
+                return solidMechanicsModel.VerticalElements;
+            }
+
+            set
+            {
+                if (solidMechanicsModel.VerticalElements == value)
+                {
+                    return;
+                }
+
+                solidMechanicsModel.VerticalElements = value;
+
+                // Update bindings, no broadcast
+                RaisePropertyChanged(VerticalElementsPropertyName);
+                FillResultPicture();
+            }
+        }
 
         /// <summary>
         /// The <see cref="HorizontalElements" /> property's name.
@@ -55,10 +88,10 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
         private void FillResultPicture()
         {
-            CylindricalPlate plate = solidMechanicsModel.Model.Shape as CylindricalPlate;
-            if (plate != null)
+            Rectangle rectangle = solidMechanicsModel.Model.Shape as Rectangle;
+            if (rectangle != null)
             {
-                LinearMesh mesh = new LinearMesh(plate, solidMechanicsModel.HorizontalElements);
+                RectangularMesh mesh = new RectangularMesh(rectangle, solidMechanicsModel.VerticalElements, solidMechanicsModel.HorizontalElements);
                 List<Shape> shapes = new List<Shape>();
                 foreach (FiniteElementRectangle fe in mesh.Elements)
                 {

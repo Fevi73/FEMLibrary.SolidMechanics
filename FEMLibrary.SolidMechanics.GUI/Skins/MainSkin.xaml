@@ -2,8 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:steps="clr-namespace:FEMLibrary.SolidMechanics.GUI.ViewModel.Steps"
                     xmlns:views="clr-namespace:FEMLibrary.SolidMechanics.GUI.Views">
-    <DataTemplate DataType="{x:Type steps:ShapeStepViewModel}">
+    <!--<DataTemplate DataType="{x:Type steps:ShapeStepViewModel}">
         <views:ShapeStepView/>
+    </DataTemplate>-->
+    <DataTemplate DataType="{x:Type steps:CylindricalShapeStepViewModel}">
+        <views:CylindricalShapeStepView/>
     </DataTemplate>
     <DataTemplate DataType="{x:Type steps:MaterialStepViewModel}">
         <views:MaterialStepView/>
@@ -14,9 +17,12 @@
     <DataTemplate DataType="{x:Type steps:BoundarySettingsStepViewModel}">
         <views:BoundarySettingsStepView/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type steps:RectangleMeshSettingsStepViewModel}">
+    <DataTemplate DataType="{x:Type steps:MeshSettingsStepViewModel}">
         <views:MeshSettingsStepView/>
     </DataTemplate>
+    <!--<DataTemplate DataType="{x:Type steps:RectangleMeshSettingsStepViewModel}">
+        <views:MeshSettingsStepView/>
+    </DataTemplate>-->
     <DataTemplate DataType="{x:Type steps:SolveStepViewModel}">
         <views:SolveStepView/>
     </DataTemplate>

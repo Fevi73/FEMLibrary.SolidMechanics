@@ -23,6 +23,7 @@ namespace FEMLibrary.SolidMechanics.Meshing
         {
             Nodes = new List<FiniteElementNode>();
             Elements = new List<IFiniteElement>();
+            boundaryNodes = new List<KeyValuePair<FiniteElementNode, Edge>>();
         }
 
         public FiniteElementNode GetNodeOnPoint(Point point)
@@ -56,6 +57,11 @@ namespace FEMLibrary.SolidMechanics.Meshing
                 }
             }
             return nodes;
+        }
+
+        protected void AddBoundaryNode(FiniteElementNode node, Edge edge)
+        {
+            boundaryNodes.Add(new KeyValuePair<FiniteElementNode, Edge>(node, edge));
         }
 
 

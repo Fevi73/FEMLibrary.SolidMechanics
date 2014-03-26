@@ -51,9 +51,6 @@ namespace FEMLibrary.SolidMechanics.Meshing
             return segments;
         }
 
-        protected void AddBoundaryNode(FiniteElementNode node, Edge edge) {
-            boundaryNodes.Add(new KeyValuePair<FiniteElementNode, Edge>(node, edge));
-        }
         protected void AddBoundarySegment(FiniteElementRectangleEdge FiniteElementRectangleEdge, Edge edge)
         {
             boundarySegments.Add(new KeyValuePair<FiniteElementRectangleEdge, Edge>(FiniteElementRectangleEdge, edge));

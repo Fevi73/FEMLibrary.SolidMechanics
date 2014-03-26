@@ -18,11 +18,6 @@ namespace FEMLibrary.SolidMechanics.Meshing
 
         
 
-        protected void AddBoundaryNode(FiniteElementNode node, Edge edge)
-        {
-            boundaryNodes.Add(new KeyValuePair<FiniteElementNode, Edge>(node, edge));
-        }
-
 
     }
 }

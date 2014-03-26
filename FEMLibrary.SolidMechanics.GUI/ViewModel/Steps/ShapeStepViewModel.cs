@@ -8,7 +8,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 {
     public class ShapeStepViewModel:WizardStepViewModelBase
     {
-        private Rectangle rectangle;
+        protected Rectangle rectangle;
 
         public ShapeStepViewModel(SolidMechanicsModel model):base("Shape", model)
         {
@@ -31,7 +31,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
         /// </summary>
         public const string IsValidPropertyName = "IsValid";
 
-        private bool isValid;
+        protected bool isValid;
 
         /// <summary>
         /// Gets the IsValid property.
