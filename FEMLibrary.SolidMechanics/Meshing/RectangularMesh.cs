@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace FEMLibrary.SolidMechanics.Meshing
 {
-    public class RectangularMesh:Mesh
+    public class RectangularMesh:Mesh2D
     {
         private int _countWidthElements;
         private int _countHeightElements;

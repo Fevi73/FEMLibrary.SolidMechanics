@@ -8,7 +8,6 @@ namespace FEMLibrary.SolidMechanics.Solving
     public abstract class Solver
     {
         protected Model _model;
-        protected BoundaryMeshSettings _meshSettings;
         protected Mesh _mesh;
 
         protected Solver(Model model, Mesh mesh)

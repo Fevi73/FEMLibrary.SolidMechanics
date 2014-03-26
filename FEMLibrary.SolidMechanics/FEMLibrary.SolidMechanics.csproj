@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Geometry\CylindricalPlate.cs" />
     <Compile Include="Geometry\FiniteElementRectangle.cs" />
     <Compile Include="Geometry\IFiniteElement.cs" />
     <Compile Include="Geometry\Node.cs" />
@@ -48,12 +49,14 @@
     <Compile Include="Geometry\Segment.cs" />
     <Compile Include="Meshing\BoundaryMesh.cs" />
     <Compile Include="Meshing\BoundaryMeshSettings.cs" />
+    <Compile Include="Meshing\Mesh1D.cs" />
+    <Compile Include="Meshing\Mesh2D.cs" />
     <Compile Include="Meshing\Mesh.cs" />
     <Compile Include="Meshing\RectangularMesh.cs" />
     <Compile Include="NumericalUtils\Integration.cs" />
     <Compile Include="ODE\CauchyProblemSolver.cs" />
     <Compile Include="Physics\BoundaryConditions.cs" />
-    <Compile Include="Geometry\LinearEdge.cs" />
+    <Compile Include="Geometry\Edge.cs" />
     <Compile Include="Physics\Material.cs" />
     <Compile Include="Physics\Model.cs" />
     <Compile Include="Geometry\Point.cs" />
@@ -65,15 +68,12 @@
     <Compile Include="Results\CauchyProblemResult.cs" />
     <Compile Include="Results\SemidiscreteVibrationsNumericalResult.cs" />
     <Compile Include="Results\EigenValuesNumericalResult.cs" />
-    <Compile Include="Solving\FreeVibrationsNonLinearSolver.cs" />
     <Compile Include="Solving\MechanicalPlate2DSolver.cs" />
-    <Compile Include="Solving\NewmarkVibrationNonLinearSolver.cs" />
+    <Compile Include="Solving\FreeVibrationsNonLinearSolver.cs" />
+    <Compile Include="Solving\CylindricalPlate1DSolver.cs" />
     <Compile Include="Solving\FreeVibrationsLinearSolver.cs" />
     <Compile Include="Results\IResult.cs" />
     <Compile Include="Results\StaticNumericalResult.cs" />
-    <Compile Include="Solving\FreeVibrationsNonLinearSolver2.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Utils\ResultHelper.cs" />
     <Compile Include="Solving\Solver.cs" />
     <Compile Include="Solving\StationaryNonlinearSolver.cs" />

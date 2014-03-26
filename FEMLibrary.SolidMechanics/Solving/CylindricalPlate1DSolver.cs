@@ -11,11 +11,9 @@ using System.Text;
 
 namespace FEMLibrary.SolidMechanics.Solving
 {
-    public abstract class MechanicalPlate2DSolver:Solver
+    public abstract class CylindricalPlate1DSolver:Solver
     {
-
-
-        public MechanicalPlate2DSolver(Model model, Mesh mesh, double error, double amplitude)
+        public CylindricalPlate1DSolver(Model model, Mesh mesh, double error, double amplitude)
             : base(model, mesh)
         {
             _error = error;
@@ -23,29 +21,58 @@ namespace FEMLibrary.SolidMechanics.Solving
             indeciesToDelete = new List<int>();
         }
 
-
         protected double _error;
         protected double _amplitude;
 
         protected Matrix ConstMatrix;
 
-        protected double M1;
-        protected double M2;
-        protected double M3;
-        protected double G13;
-
         protected IFiniteElement elementCurrent;
         protected Vector previousU;
         protected ICollection<int> indeciesToDelete;
 
-        public Matrix GetConstantMatrix()
+        public Matrix GetConstantMatrix(double E, double v, double h)
         {
-            ConstMatrix = new Matrix(4, 4);
-            M1 = ConstMatrix[0, 0] = _model.Material.GetE1Modif() * (1 + _model.Material.GetAlfa1());
-            M2 = ConstMatrix[1, 0] = ConstMatrix[0, 1] = _model.Material.GetLambda1() * _model.Material.GetE0();
-            M3 = ConstMatrix[1, 1] = _model.Material.GetE0();
-            G13 = ConstMatrix[2, 2] = ConstMatrix[2, 3] = ConstMatrix[3, 2] = ConstMatrix[3, 3] = _model.Material.GetG13();
+            Matrix A = new Matrix(9, 9);
+
+            A[0, 0] = A[0, 2] = A[1, 1] = A[1, 2] = A[2, 0] = A[2, 1] = A[3, 3] = A[3, 5] = A[4, 4] = A[4, 5] = A[5, 3] = A[5, 4] = (E * h * (1 - v)) / (3 * (1 + v) * (1 - 2 * v));
+            A[0, 1] = A[1, 0] = A[3, 4] = A[4, 3] = (E * h * (1 - v)) / (6 * (1 + v) * (1 - 2 * v));
+            A[2, 2] = A[5, 5] = (8 * E * h * (1 - v)) / (5 * (1 + v) * (1 - 2 * v));
+
+
+            A[0, 3] = A[0, 5] = A[1, 4] = A[1, 5] = A[2, 3] = A[2, 4] = A[3, 0] = A[3, 2] = A[4, 1] = A[4, 2] = A[5, 0] = A[5, 1] = (E * h * v) / (3 * (1 + v) * (1 - 2 * v));
+            A[0, 4] = A[1, 3] = A[3, 1] = A[4, 0] = (E * h * v) / (6 * (1 + v) * (1 - 2 * v));
+            A[2, 5] = A[5, 2] = (8 * E * h * v) / (5 * (1 + v) * (1 - 2 * v));
+
+            A[6, 6] = A[6, 8] = A[7, 7] = A[7, 8] = A[8, 6] = A[8, 7] = (E * h) / (6 * (1 + v));
+            A[6, 7] = A[7, 6] = (E * h) / (12 * (1 + v));
+            A[8, 8] = (4 * E * h) / (15 * (1 + v));
+
+            Matrix D = matrixD();
+
+            ConstMatrix = Matrix.Transpose(D) * A * D;
             return ConstMatrix;
+        }
+
+        private Matrix matrixD()
+        {
+            CylindricalPlate plate = _model.Shape as CylindricalPlate;
+
+            double hInv = 1 / plate.Height;
+
+            double K = plate.Curvature;
+            Matrix D = new Matrix(9, 12);
+            D[0, 1] = D[1, 3] = D[2, 5] = D[6, 7] = D[7, 9] = D[8, 11] = 1;
+            D[0, 6] = D[1, 8] = D[2, 10] = D[8, 4] = K;
+            D[5, 10] = 2 * K;
+
+            D[3, 6] = -hInv + K / 2;
+            D[3, 8] = D[6, 2] = D[7, 2] = hInv - K / 2;
+            D[3, 10] = D[6, 4] = 4 * hInv - 2 * K;
+
+            D[4, 6] = D[6, 0] = D[7, 0] = -hInv - K / 2;
+            D[4, 8] = hInv + K / 2;
+            D[4, 10] = D[7, 4] = -4 * hInv - 2 * K;
+            return D;
         }
 
         #region MassMatrix
@@ -108,27 +135,25 @@ namespace FEMLibrary.SolidMechanics.Solving
 
         public Matrix GetStiffnessMatrix()
         {
-            Matrix StiffnessMatrix = new Matrix(_mesh.Nodes.Count * 2, _mesh.Nodes.Count * 2);
+            int N = _mesh.Elements.Count;
+            int count = 6 * (N + 1);
+
+            Matrix StiffnessMatrix = new Matrix(count, count);
             foreach (IFiniteElement element in _mesh.Elements)
             {
                 Matrix localStiffnessMatrix = GetLocalStiffnessMatrix(element);
 
-                for (int i = 0; i < element.Count; i++)
+                for (int i = 0; i < localStiffnessMatrix.CountRows; i++)
                 {
-                    for (int j = 0; j < element.Count; j++)
+                    for (int j = 0; j < localStiffnessMatrix.CountColumns; j++)
                     {
-                        StiffnessMatrix[2 * element[i].Index, 2 * element[j].Index] += localStiffnessMatrix[2 * i, 2 * j];
-                        StiffnessMatrix[2 * element[i].Index + 1, 2 * element[j].Index] += localStiffnessMatrix[2 * i + 1, 2 * j];
-                        StiffnessMatrix[2 * element[i].Index, 2 * element[j].Index + 1] += localStiffnessMatrix[2 * i, 2 * j + 1];
-                        StiffnessMatrix[2 * element[i].Index + 1, 2 * element[j].Index + 1] += localStiffnessMatrix[2 * i + 1, 2 * j + 1];
+                        StiffnessMatrix[6 * element[0].Index + i, 6 * element[0].Index + j] += localStiffnessMatrix[i, j];
                     }
                 }
             }
 
             return StiffnessMatrix;
         }
-
-
 
         #region Local Matrix
 
@@ -141,48 +166,37 @@ namespace FEMLibrary.SolidMechanics.Solving
             return localStiffnessMatrix;
         }
 
-        protected Matrix LocalStiffnessMatrixFunction(double ksi, double eta)
+        protected Matrix LocalStiffnessMatrixFunction(double eta)
         {
-            Matrix derivativeMatrix = GetLocalDerivativeMatrix(elementCurrent, ksi, eta);
+            Matrix derivativeMatrix = GetLocalDerivativeMatrix(elementCurrent, eta);
 
-            JacobianRectangular J = new JacobianRectangular();
-            J.Element = elementCurrent;
-
-            return derivativeMatrix * ConstMatrix * Matrix.Transpose(derivativeMatrix) * J.GetJacobianDeterminant(ksi, eta);
+            return derivativeMatrix * ConstMatrix * Matrix.Transpose(derivativeMatrix) * ((elementCurrent[1].Point.X - elementCurrent[0].Point.X) / 2);
         }
 
-        protected Matrix GetLocalDerivativeMatrix(IFiniteElement element, double ksi, double eta)
+        protected Matrix GetLocalDerivativeMatrix(IFiniteElement element, double eta)
         {
-            Matrix LocalDerivativeMatrix = new Matrix(8, 4);
+            int n = 12;
+            Matrix LocalDerivativeMatrix = new Matrix(n, n);
 
-            Matrix gradNksieta = new Matrix(2, 4);
-
-            gradNksieta[0, 0] = (eta - 1) * 0.25;
-            gradNksieta[1, 0] = (ksi - 1) * 0.25;
-            gradNksieta[0, 1] = (1 - eta) * 0.25;
-            gradNksieta[1, 1] = (-ksi - 1) * 0.25;
-            gradNksieta[0, 2] = (eta + 1) * 0.25;
-            gradNksieta[1, 2] = (ksi + 1) * 0.25;
-            gradNksieta[0, 3] = (-eta - 1) * 0.25;
-            gradNksieta[1, 3] = (1 - ksi) * 0.25;
-
-            JacobianRectangular J = new JacobianRectangular();
-            J.Element = element;
-
-            Matrix gradN = J.GetInverseJacobian(ksi, eta) * gradNksieta;
-
-            LocalDerivativeMatrix[0, 0] = LocalDerivativeMatrix[1, 3] = gradN[0, 0];
-            LocalDerivativeMatrix[2, 0] = LocalDerivativeMatrix[3, 3] = gradN[0, 1];
-            LocalDerivativeMatrix[4, 0] = LocalDerivativeMatrix[5, 3] = gradN[0, 2];
-            LocalDerivativeMatrix[6, 0] = LocalDerivativeMatrix[7, 3] = gradN[0, 3];
-
-            LocalDerivativeMatrix[1, 1] = LocalDerivativeMatrix[0, 2] = gradN[1, 0];
-            LocalDerivativeMatrix[3, 1] = LocalDerivativeMatrix[2, 2] = gradN[1, 1];
-            LocalDerivativeMatrix[5, 1] = LocalDerivativeMatrix[4, 2] = gradN[1, 2];
-            LocalDerivativeMatrix[7, 1] = LocalDerivativeMatrix[6, 2] = gradN[1, 3];
+            int m = 0;
+            for (int j = 0; j < n; j++)
+            {
+                if (j % 2 == 0)
+                {
+                    LocalDerivativeMatrix[j, m] = (1 - eta) / 2;
+                    LocalDerivativeMatrix[j, m + 6] = (1 + eta) / 2;
+                }
+                else
+                {
+                    LocalDerivativeMatrix[j, m] = 1 / (element[0].Point.X - element[1].Point.X);
+                    LocalDerivativeMatrix[j, m + 6] = 1 / (element[1].Point.X - element[0].Point.X);
+                    m += 1;
+                }
+            }
 
             return LocalDerivativeMatrix;
         }
+
         #endregion
 
         #endregion
@@ -392,5 +406,6 @@ namespace FEMLibrary.SolidMechanics.Solving
 
             return results;
         }
+
     }
 }

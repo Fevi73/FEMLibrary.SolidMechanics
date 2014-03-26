@@ -8,37 +8,19 @@ namespace FEMLibrary.SolidMechanics.Meshing
     {
         public List<FiniteElementNode> Nodes { get; protected set; }
         public List<IFiniteElement> Elements { get; protected set; }
-        public List<Segment> Segments { get; protected set; }
-        protected List<KeyValuePair<FiniteElementNode, Edge>> boundaryNodes;
-        protected List<KeyValuePair<Segment, Edge>> boundarySegments;
 
-        public bool IsMeshGenerated { get; private set; }
-        private bool isSettingsSetted;
-        
-        public BoundaryMeshSettings BoundaryMeshSettings { get; protected set; }
+        public bool IsMeshGenerated { get; protected set; }
 
-        protected Mesh(BoundaryMeshSettings boundaryMeshSettings)
+        protected Mesh()
         {
             initMeshElements();
-            BoundaryMeshSettings = boundaryMeshSettings;
-            isSettingsSetted = true;
-        }
-
-        protected Mesh(Shape shape)
-        {
-            initMeshElements();
-            BoundaryMeshSettings = new BoundaryMeshSettings(shape);
-            isSettingsSetted = false;
         }
 
 
-        protected void initMeshElements()
+        protected virtual void initMeshElements()
         {
             Nodes = new List<FiniteElementNode>();
             Elements = new List<IFiniteElement>();
-            Segments = new List<Segment>();
-            boundaryNodes = new List<KeyValuePair<FiniteElementNode, Edge>>();
-            boundarySegments = new List<KeyValuePair<Segment, Edge>>();
         }
 
         public FiniteElementNode GetNodeOnPoint(Point point)
@@ -61,50 +43,10 @@ namespace FEMLibrary.SolidMechanics.Meshing
             return node;
         }
 
-        public List<FiniteElementNode> GetNodesOnEdge(Edge edge)
-        {
-            List<FiniteElementNode> nodes = new List<FiniteElementNode>();
-            foreach(KeyValuePair<FiniteElementNode, Edge> pair in boundaryNodes)
-            {
-                if (pair.Value == edge)
-                {
-                    nodes.Add(pair.Key);
-                }
-            }
-            return nodes;
-        }
 
-        public List<Segment> GetSegmentsOnEdge(Edge edge)
-        {
-            List<Segment> segments = new List<Segment>();
-            foreach (KeyValuePair<Segment, Edge> pair in boundarySegments)
-            {
-                if (pair.Value == edge)
-                {
-                    segments.Add(pair.Key);
-                }
-            }
-            return segments;
-        }
 
-        protected void AddBoundaryNode(FiniteElementNode node, Edge edge) {
-            boundaryNodes.Add(new KeyValuePair<FiniteElementNode, Edge>(node, edge));
-        }
-        protected void AddBoundarySegment(Segment segment, Edge edge)
-        {
-            boundarySegments.Add(new KeyValuePair<Segment, Edge>(segment, edge));
-        }
-
-        public void Generate()
-        {
-            if (!isSettingsSetted) getDefaultBoundaryMeshSettings(BoundaryMeshSettings.Shape);
-            IsMeshGenerated = Generate(BoundaryMeshSettings);
-        }
-
-        protected abstract bool Generate(BoundaryMeshSettings boundaryMeshSettings);
-
-        protected abstract BoundaryMeshSettings getDefaultBoundaryMeshSettings(Shape shape);
-
+        public abstract void Generate();
+        
         public abstract IEnumerable<Point> GetPointsForResult();
 
     }
