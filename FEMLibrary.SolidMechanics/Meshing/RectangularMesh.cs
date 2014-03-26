@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace FEMLibrary.SolidMechanics.Meshing
 {
-    public class RectangularMesh:Mesh
+    public class RectangularMesh:Mesh2D
     {
         private int _countWidthElements;
         private int _countHeightElements;
@@ -39,7 +39,7 @@ namespace FEMLibrary.SolidMechanics.Meshing
                 int segmentsCount = nodes.Count - 1;
                 for (int i = 0; i < segmentsCount; i++)
                 {
-                    Segment segment = new Segment(nodes[i], nodes[i + 1]);
+                    FiniteElementRectangleEdge segment = new FiniteElementRectangleEdge(nodes[i], nodes[i + 1]);
                     AddBoundarySegment(segment, edge);
                 }
             }

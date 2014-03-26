@@ -1,18 +1,9 @@
 ﻿#define ALL_LAMBDAS
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FEMLibrary.SolidMechanics.Physics;
 using FEMLibrary.SolidMechanics.Meshing;
-using MatrixLibrary;
-using FEMLibrary.SolidMechanics.Geometry;
-using FEMLibrary.SolidMechanics.Utils;
-using FEMLibrary.SolidMechanics.NumericalUtils;
-using System.Diagnostics;
+using FEMLibrary.SolidMechanics.Physics;
 using FEMLibrary.SolidMechanics.Results;
-using FEMLibrary.SolidMechanics.ODE;
-using System.IO;
+using MatrixLibrary;
+using System.Collections.Generic;
 
 namespace FEMLibrary.SolidMechanics.Solving
 {
@@ -32,9 +23,8 @@ namespace FEMLibrary.SolidMechanics.Solving
             
             if (_mesh.IsMeshGenerated)
             {
-                
                 GetConstantMatrix();
-
+                
                 indeciesToDelete = getIndeciesWithStaticBoundaryConditions();
 
                 Matrix stiffnessMatrix = GetStiffnessMatrix();

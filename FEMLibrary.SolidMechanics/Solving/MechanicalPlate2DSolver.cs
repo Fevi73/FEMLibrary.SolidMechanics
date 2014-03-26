@@ -13,6 +13,8 @@ namespace FEMLibrary.SolidMechanics.Solving
 {
     public abstract class MechanicalPlate2DSolver:Solver
     {
+
+
         public MechanicalPlate2DSolver(Model model, Mesh mesh, double error, double amplitude)
             : base(model, mesh)
         {
@@ -20,6 +22,7 @@ namespace FEMLibrary.SolidMechanics.Solving
             _amplitude = amplitude;
             indeciesToDelete = new List<int>();
         }
+
 
         protected double _error;
         protected double _amplitude;
