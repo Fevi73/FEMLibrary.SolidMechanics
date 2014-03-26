@@ -36,7 +36,6 @@ namespace FEMLibrary.SolidMechanics.NumericalUtils
             Matrix resMatrix = Matrix.Transpose(w) * F * w;
 
             return resMatrix[0,0];
-     
         }
 
         public static Matrix GaussianIntegrationMatrix(Func<double, double, Matrix> function)
@@ -49,6 +48,18 @@ namespace FEMLibrary.SolidMechanics.NumericalUtils
                 {
                     res += GaussianQuadrature.WEIGHT[i] * GaussianQuadrature.WEIGHT[j] * function(GaussianQuadrature.NODES[i], GaussianQuadrature.NODES[j]);
                 }
+            }
+
+            return res;
+        }
+
+        public static Matrix GaussianIntegrationMatrix(Func<double, Matrix> function)
+        {
+            Matrix res = new Matrix(function(0).CountRows, function(0).CountColumns);
+
+            for (int i = 0; i < GaussianQuadrature.ORDER; i++)
+            {
+                res += GaussianQuadrature.WEIGHT[i] * function(GaussianQuadrature.NODES[i]);
             }
 
             return res;
