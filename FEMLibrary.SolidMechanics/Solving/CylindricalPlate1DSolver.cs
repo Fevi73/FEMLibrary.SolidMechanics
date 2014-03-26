@@ -11,7 +11,7 @@ using System.Text;
 
 namespace FEMLibrary.SolidMechanics.Solving
 {
-    public abstract class CylindricalPlate1DSolver:Solver
+    public class CylindricalPlate1DSolver:Solver
     {
         public CylindricalPlate1DSolver(Model model, Mesh mesh, double error, double amplitude)
             : base(model, mesh)
@@ -79,19 +79,19 @@ namespace FEMLibrary.SolidMechanics.Solving
 
         public Matrix GetMassMatrix()
         {
-            Matrix MassMatrix = new Matrix(_mesh.Nodes.Count * 2, _mesh.Nodes.Count * 2);
+            int N = _mesh.Elements.Count;
+            int count = 6 * (N + 1);
+
+            Matrix MassMatrix = new Matrix(count, count);
             foreach (IFiniteElement element in _mesh.Elements)
             {
-                Matrix localMassMatrix = GetLocalMassMatrixMatrix(element);
+                Matrix localMassMatrix = GetLocalMassMatrix(element);
 
-                for (int i = 0; i < element.Count; i++)
+                for (int i = 0; i < localMassMatrix.CountRows; i++)
                 {
-                    for (int j = 0; j < element.Count; j++)
+                    for (int j = 0; j < localMassMatrix.CountColumns; j++)
                     {
-                        MassMatrix[2 * element[i].Index, 2 * element[j].Index] += localMassMatrix[2 * i, 2 * j];
-                        MassMatrix[2 * element[i].Index + 1, 2 * element[j].Index] += localMassMatrix[2 * i + 1, 2 * j];
-                        MassMatrix[2 * element[i].Index, 2 * element[j].Index + 1] += localMassMatrix[2 * i, 2 * j + 1];
-                        MassMatrix[2 * element[i].Index + 1, 2 * element[j].Index + 1] += localMassMatrix[2 * i + 1, 2 * j + 1];
+                        MassMatrix[6 * element[0].Index + i, 6 * element[0].Index + j] += localMassMatrix[i, j];
                     }
                 }
             }
@@ -99,7 +99,7 @@ namespace FEMLibrary.SolidMechanics.Solving
             return MassMatrix;
         }
 
-        protected Matrix GetLocalMassMatrixMatrix(IFiniteElement element)
+        protected Matrix GetLocalMassMatrix(IFiniteElement element)
         {
             elementCurrent = element;
 
@@ -108,24 +108,24 @@ namespace FEMLibrary.SolidMechanics.Solving
             return localMassMatrix;
         }
 
-        protected Matrix LocalMassMatrixFunction(double ksi, double eta)
+        protected Matrix LocalMassMatrixFunction(double eta)
         {
-            Matrix baseFunctionsMatrix = GetLocalBaseFunctionsMatrix(ksi, eta);
+            Matrix baseFunctionsMatrix = GetLocalBaseFunctionsMatrix(eta);
 
-            JacobianRectangular J = new JacobianRectangular();
-            J.Element = elementCurrent;
-
-            return baseFunctionsMatrix * Matrix.Transpose(baseFunctionsMatrix) * J.GetJacobianDeterminant(ksi, eta);
+            return baseFunctionsMatrix * Matrix.Transpose(baseFunctionsMatrix) * ((elementCurrent[1].Point.X - elementCurrent[0].Point.X) / 2);
         }
 
-        protected Matrix GetLocalBaseFunctionsMatrix(double ksi, double eta)
+        protected Matrix GetLocalBaseFunctionsMatrix(double eta)
         {
-            Matrix matrix = new Matrix(8, 2);
-            matrix[0, 0] = matrix[1, 1] = 0.25 * (1 - ksi) * (1 - eta);
-            matrix[2, 0] = matrix[3, 1] = 0.25 * (1 + ksi) * (1 - eta);
-            matrix[4, 0] = matrix[5, 1] = 0.25 * (1 + ksi) * (1 + eta);
-            matrix[6, 0] = matrix[7, 1] = 0.25 * (1 - ksi) * (1 + eta);
-            return matrix;
+            Matrix localDerivativeMatrix = new Matrix(6, 12);
+
+            for (int j = 0; j < 6; j++)
+            {
+                localDerivativeMatrix[j, j] = (1 - eta) / 2;
+                localDerivativeMatrix[j, j + 6] = (1 + eta) / 2;
+            }
+
+            return localDerivativeMatrix;
         }
 
 
@@ -200,7 +200,7 @@ namespace FEMLibrary.SolidMechanics.Solving
         #endregion
 
         #endregion
-
+        /*
         #region Nonliear Stiffness Matrix
         public Matrix GetNonlinearMatrix(Vector u)
         {
@@ -266,10 +266,6 @@ namespace FEMLibrary.SolidMechanics.Solving
             double d1u1 = uDerivative[0];
             double d3u3 = uDerivative[1];
             Matrix derivativeUMatrix = new Matrix(4, 4);
-            /*derivativeUMatrix[0, 0] = derivativeUMatrix[2, 2] = uDerivative[0];
-            derivativeUMatrix[1, 1] = derivativeUMatrix[3, 3] = uDerivative[1];
-            derivativeUMatrix[3, 0] = derivativeUMatrix[1, 2] = uDerivative[2];
-            derivativeUMatrix[2, 1] = derivativeUMatrix[0, 3] = uDerivative[3];*/
             derivativeUMatrix[0, 0] = (M1 * d1u1 + M2 * d3u3) * 0.5;
             derivativeUMatrix[1, 1] = (M2 * d1u1 + M3 * d3u3) * 0.5;
             derivativeUMatrix[2, 2] = (M2 * d1u1 + M3 * d3u3) * 0.5 + G13 * d1u1;
@@ -282,7 +278,7 @@ namespace FEMLibrary.SolidMechanics.Solving
 
 
         #endregion
-
+    */
         #region Boundary conditions
 
         protected Vector applyStaticBoundaryConditionsToVector(Vector result, ICollection<int> indeciesToDelete)
@@ -407,5 +403,10 @@ namespace FEMLibrary.SolidMechanics.Solving
             return results;
         }
 
+
+        public override IEnumerable<INumericalResult> Solve(int resultsCount)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
