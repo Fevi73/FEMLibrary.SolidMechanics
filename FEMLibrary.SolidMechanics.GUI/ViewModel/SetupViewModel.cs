@@ -14,6 +14,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         private const string FILENAME = "tempmodel.dat";
         private SolidMechanicsModel model;
 
+        private bool isRect = false;
+
         public ObservableCollection<WizardStepViewModelBase> Steps { get; private set; }
 
         /// <summary>
@@ -21,9 +23,19 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// </summary>
         public SetupViewModel()
         {
-            //model = new SolidMechanicsModel2D(new Rectangle(0, 0));
-            model = new SolidMechanicsModel(new CylindricalPlate(0, 0));
-            Steps = getSteps();
+
+            if (isRect)
+            {
+                SolidMechanicsModel2D m = new SolidMechanicsModel2D(new Rectangle(0, 0));
+                Steps = getSteps2D(m);
+                model = m;
+            }
+            else
+            {
+                model = new SolidMechanicsModel(new CylindricalPlate(0, 0));
+                Steps = getSteps(model);
+            }
+            
             activeStep = Steps[0];
             activeStep.IsCurrent = true;
 
@@ -33,19 +45,34 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
             LoadCommand = new RelayCommand(Load);
         }
 
-        private ObservableCollection<WizardStepViewModelBase> getSteps()
+        private ObservableCollection<WizardStepViewModelBase> getSteps(SolidMechanicsModel m)
         {
             ObservableCollection<WizardStepViewModelBase> steps = new ObservableCollection<WizardStepViewModelBase>();
 
             //steps.Add(new ShapeStepViewModel(model));
-            steps.Add(new CylindricalShapeStepViewModel(model));
-            steps.Add(new MaterialStepViewModel(model));
-            steps.Add(new PointSettingsStepViewModel(model));
-            steps.Add(new BoundarySettingsStepViewModel(model));
-            steps.Add(new InitialSettingsStepViewModel(model));
+            steps.Add(new CylindricalShapeStepViewModel(m));
+            steps.Add(new MaterialStepViewModel(m));
+            steps.Add(new PointSettingsStepViewModel(m));
+            steps.Add(new BoundarySettingsStepViewModel(m));
+            steps.Add(new InitialSettingsStepViewModel(m));
             //steps.Add(new RectangleMeshSettingsStepViewModel(model));
-            steps.Add(new MeshSettingsStepViewModel(model));
-            steps.Add(new SolveStepViewModel(model));
+            steps.Add(new MeshSettingsStepViewModel(m));
+            steps.Add(new SolveStepViewModel(m));
+
+            return steps;
+        }
+
+        private ObservableCollection<WizardStepViewModelBase> getSteps2D(SolidMechanicsModel2D m)
+        {
+            ObservableCollection<WizardStepViewModelBase> steps = new ObservableCollection<WizardStepViewModelBase>();
+
+            steps.Add(new ShapeStepViewModel(m));
+            steps.Add(new MaterialStepViewModel(m));
+            steps.Add(new PointSettingsStepViewModel(m));
+            steps.Add(new BoundarySettingsStepViewModel(m));
+            steps.Add(new InitialSettingsStepViewModel(m));
+            steps.Add(new RectangleMeshSettingsStepViewModel(m));
+            steps.Add(new Solve2DStepViewModel(m));
 
             return steps;
         }

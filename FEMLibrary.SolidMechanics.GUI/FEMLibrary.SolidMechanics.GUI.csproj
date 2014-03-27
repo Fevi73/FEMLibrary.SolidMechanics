@@ -101,11 +101,16 @@
     <Compile Include="ViewModel\Steps\MaterialStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\MeshSettingsStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\PointViewModel.cs" />
+    <Compile Include="ViewModel\Steps\RectangleSettingsStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\ShapeStepViewModel.cs" />
+    <Compile Include="ViewModel\Steps\Solve2DStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\SolveStepViewModel.cs" />
     <Compile Include="ViewModel\WizardStepViewModelBase.cs" />
     <Compile Include="Views\BoundarySettingsStepView.xaml.cs">
       <DependentUpon>BoundarySettingsStepView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Mesh2DSettingsStepView.xaml.cs">
+      <DependentUpon>Mesh2DSettingsStepView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CylindricalShapeStepView.xaml.cs">
       <DependentUpon>CylindricalShapeStepView.xaml</DependentUpon>
@@ -151,6 +156,10 @@
     <Page Include="Views\BoundarySettingsStepView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Mesh2DSettingsStepView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CylindricalShapeStepView.xaml">
       <Generator>MSBuild:Compile</Generator>
