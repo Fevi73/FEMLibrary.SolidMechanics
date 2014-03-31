@@ -238,11 +238,12 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                 FillResultGrid(null, result, points);
                 IEnumerable<IFiniteElement> elements = result.Elements;
 
-                drawingThread = new Thread(delegate()
+                /*drawingThread = new Thread(delegate()
                 {
                     DrawResult(result, elements);
                 });
                 drawingThread.Start();
+                 */
             }
         }
 

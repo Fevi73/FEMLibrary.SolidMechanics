@@ -400,12 +400,15 @@ namespace FEMLibrary.SolidMechanics.Solving
         {
             List<INumericalResult> results = new List<INumericalResult>();
 
+            CylindricalPlate plate = _model.Shape as CylindricalPlate;
+
+            double h = plate.Height;
+
             for (int i = 0; i < lambdas.Length; i++)
             {
                 Vector eigenVector = eigenVectors[i];
                 eigenVector = addStaticPoints(eigenVector, indeciesToDelete);
-                eigenVector = applyAmplitudeToVector(eigenVector);
-                EigenValuesNumericalResult result = new EigenValuesNumericalResult(_mesh.Elements, eigenVector, Math.Sqrt(lambdas[i]));///_model.Material.Rho));
+                EigenValuesCylindricalPlateNumericalResult result = new EigenValuesCylindricalPlateNumericalResult(_mesh.Elements, eigenVector, Math.Sqrt(lambdas[i]  / _model.Material.Rho) , h);
                 results.Add(result);
             }
 
