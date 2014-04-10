@@ -1,4 +1,5 @@
-﻿using FEMLibrary.SolidMechanics.Geometry;
+﻿using FEMLibrary.SolidMechanics.FiniteElements;
+using FEMLibrary.SolidMechanics.Geometry;
 using MatrixLibrary;
 using System.Collections.Generic;
 

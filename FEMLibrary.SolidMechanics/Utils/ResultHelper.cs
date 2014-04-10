@@ -3,6 +3,7 @@ using FEMLibrary.SolidMechanics.Geometry;
 using MatrixLibrary;
 using FEMLibrary.SolidMechanics.Solving;
 using FEMLibrary.SolidMechanics.Results;
+using FEMLibrary.SolidMechanics.FiniteElements;
 
 namespace FEMLibrary.SolidMechanics.Utils
 {

@@ -5,6 +5,7 @@ using FEMLibrary.SolidMechanics.Geometry;
 using System.Windows;
 using System;
 using FEMLibrary.SolidMechanics.Meshing;
+using FEMLibrary.SolidMechanics.FiniteElements;
 
 namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 {

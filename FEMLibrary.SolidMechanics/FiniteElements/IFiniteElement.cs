@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FEMLibrary.SolidMechanics.Geometry
+namespace FEMLibrary.SolidMechanics.FiniteElements
 {
     public interface IFiniteElement
     {

@@ -4,6 +4,7 @@ using FEMLibrary.SolidMechanics.Utils;
 using MatrixLibrary;
 using FEMLibrary.SolidMechanics.Geometry;
 using FEMLibrary.SolidMechanics.NumericalUtils;
+using FEMLibrary.SolidMechanics.FiniteElements;
 
 namespace FEMLibrary.SolidMechanics.Results
 {

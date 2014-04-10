@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FEMLibrary.SolidMechanics.Geometry;
+using FEMLibrary.SolidMechanics.FiniteElements;
 
 namespace FEMLibrary.SolidMechanics.Meshing
 {

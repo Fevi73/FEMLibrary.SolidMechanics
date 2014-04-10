@@ -44,6 +44,11 @@ namespace FEMLibrary.SolidMechanics.Geometry
             return res;
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override string ToString()
         {
             return X.ToString() + " ; " + Y.ToString();

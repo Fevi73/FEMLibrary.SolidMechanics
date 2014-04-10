@@ -1,4 +1,5 @@
 ﻿#define ALL_LAMBDAS
+using FEMLibrary.SolidMechanics.FiniteElements;
 using FEMLibrary.SolidMechanics.Geometry;
 using FEMLibrary.SolidMechanics.Meshing;
 using FEMLibrary.SolidMechanics.NumericalUtils;
@@ -210,86 +211,7 @@ namespace FEMLibrary.SolidMechanics.Solving
         #endregion
 
         #endregion
-        /*
-        #region Nonliear Stiffness Matrix
-        public Matrix GetNonlinearMatrix(Vector u)
-        {
-            Vector uWithStaticPoints = addStaticPoints(u, indeciesToDelete);
-            Matrix NonlinearMatrix = new Matrix(_mesh.Nodes.Count * 2, _mesh.Nodes.Count * 2);
-            foreach (IFiniteElement element in _mesh.Elements)
-            {
-                Matrix localMassMatrix = GetLocalNonlinearMatrix(element, uWithStaticPoints);
-
-                for (int i = 0; i < element.Count; i++)
-                {
-                    for (int j = 0; j < element.Count; j++)
-                    {
-                        NonlinearMatrix[2 * element[i].Index, 2 * element[j].Index] += localMassMatrix[2 * i, 2 * j];
-                        NonlinearMatrix[2 * element[i].Index + 1, 2 * element[j].Index] += localMassMatrix[2 * i + 1, 2 * j];
-                        NonlinearMatrix[2 * element[i].Index, 2 * element[j].Index + 1] += localMassMatrix[2 * i, 2 * j + 1];
-                        NonlinearMatrix[2 * element[i].Index + 1, 2 * element[j].Index + 1] += localMassMatrix[2 * i + 1, 2 * j + 1];
-                    }
-                }
-            }
-
-            return NonlinearMatrix;
-        }
-
-        protected Matrix GetLocalNonlinearMatrix(IFiniteElement element, Vector u)
-        {
-            elementCurrent = element;
-            previousU = u;
-
-            Matrix localMassMatrix = Integration.GaussianIntegrationMatrix(LocalNonlinearMatrixFunction);
-
-            return localMassMatrix;
-        }
-
-        protected Matrix LocalNonlinearMatrixFunction(double ksi, double eta)
-        {
-            Matrix derivativeMatrix = GetLocalDerivativeMatrix(elementCurrent, ksi, eta);
-
-            Matrix derivativeUMatrix = GetLocalUDerivativeMatrix(previousU, elementCurrent, ksi, eta);
-
-            JacobianRectangular J = new JacobianRectangular();
-            J.Element = elementCurrent;
-
-            return derivativeMatrix * derivativeUMatrix * Matrix.Transpose(derivativeMatrix) * J.GetJacobianDeterminant(ksi, eta);
-        }
-
-
-
-        protected Matrix GetLocalUDerivativeMatrix(Vector previousU, IFiniteElement elementCurrent, double ksi, double eta)
-        {
-            Matrix derivativeMatrix = GetLocalDerivativeMatrix(elementCurrent, ksi, eta);
-            Vector uOnElement = new Vector(8);
-            if (previousU != null)
-            {
-                for (int i = 0; i < elementCurrent.Count; i++)
-                {
-                    uOnElement[2 * i] = previousU[2 * elementCurrent[i].Index];
-                    uOnElement[2 * i + 1] = previousU[2 * elementCurrent[i].Index + 1];
-                }
-            }
-
-            Vector uDerivative = Matrix.Transpose(derivativeMatrix) * uOnElement;
-            double d1u1 = uDerivative[0];
-            double d3u3 = uDerivative[1];
-            Matrix derivativeUMatrix = new Matrix(4, 4);
-            derivativeUMatrix[0, 0] = (M1 * d1u1 + M2 * d3u3) * 0.5;
-            derivativeUMatrix[1, 1] = (M2 * d1u1 + M3 * d3u3) * 0.5;
-            derivativeUMatrix[2, 2] = (M2 * d1u1 + M3 * d3u3) * 0.5 + G13 * d1u1;
-            derivativeUMatrix[3, 3] = (M1 * d1u1 + M2 * d3u3) * 0.5 + G13 * d3u3;
-            derivativeUMatrix[2, 3] = G13 * d3u3;
-            derivativeUMatrix[3, 2] = G13 * d1u1;
-            return derivativeUMatrix;
-
-        }
-
-
-        #endregion
-    */
-
+        
         #region Boundary conditions
 
         protected Vector applyStaticBoundaryConditionsToVector(Vector result, ICollection<int> indeciesToDelete)
@@ -304,7 +226,7 @@ namespace FEMLibrary.SolidMechanics.Solving
         }
 
 
-        protected Matrix applyStaticBoundaryConditions(Matrix stiffnessMatrix, ICollection<int> indeciesToDelete)
+        protected Matrix applyStaticBoundaryConditionsToMatrix(Matrix stiffnessMatrix, ICollection<int> indeciesToDelete)
         {
             indeciesToDelete = indeciesToDelete.OrderByDescending(i => i).ToList();
 
@@ -427,10 +349,10 @@ namespace FEMLibrary.SolidMechanics.Solving
                 indeciesToDelete = getIndeciesWithStaticBoundaryConditions();
 
                 Matrix StiffnessMatrix = GetStiffnessMatrix();
-                StiffnessMatrix = applyStaticBoundaryConditions(StiffnessMatrix, indeciesToDelete);
+                StiffnessMatrix = applyStaticBoundaryConditionsToMatrix(StiffnessMatrix, indeciesToDelete);
 
                 Matrix MassMatrix = GetMassMatrix();
-                MassMatrix = applyStaticBoundaryConditions(MassMatrix, indeciesToDelete);
+                MassMatrix = applyStaticBoundaryConditionsToMatrix(MassMatrix, indeciesToDelete);
 
 #if (ALL_LAMBDAS)
                 Vector[] eigenVectors;

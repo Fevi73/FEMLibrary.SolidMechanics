@@ -41,12 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Geometry\FiniteElementSegment.cs" />
-    <Compile Include="Geometry\FiniteElementNode.cs" />
+    <Compile Include="FiniteElements\FiniteElementSegment.cs" />
+    <Compile Include="FiniteElements\FiniteElementNode.cs" />
     <Compile Include="Geometry\CylindricalPlate.cs" />
-    <Compile Include="Geometry\FiniteElementRectangle.cs" />
-    <Compile Include="Geometry\FiniteElementRectangleEdge.cs" />
-    <Compile Include="Geometry\IFiniteElement.cs" />
+    <Compile Include="FiniteElements\FiniteElementRectangle.cs" />
+    <Compile Include="FiniteElements\FiniteElementRectangleEdge.cs" />
+    <Compile Include="FiniteElements\IFiniteElement.cs" />
     <Compile Include="Geometry\Rectangle.cs" />
     <Compile Include="Meshing\BoundaryMesh.cs" />
     <Compile Include="Meshing\BoundaryMeshSettings.cs" />
