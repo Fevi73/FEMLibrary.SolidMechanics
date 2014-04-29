@@ -1,0 +1,13 @@
+﻿<Window x:Class="FEMLibrary.SolidMechanics.GUI.SelectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Create solution" Height="300" Width="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Button Margin="10">Solve rectangular plate</Button>
+        <Button Grid.Row="1" Margin="10">Solve cylindrical plate</Button>
+    </Grid>
+</Window>
