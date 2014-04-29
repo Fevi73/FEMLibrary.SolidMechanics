@@ -9,12 +9,10 @@ using GalaSoft.MvvmLight.Command;
 
 namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 {
-    public class SetupViewModel : ViewModelBase
+    public abstract class SetupViewModel : ViewModelBase
     {
         private const string FILENAME = "tempmodel.dat";
-        private SolidMechanicsModel model;
-
-        private bool isRect = false;
+        protected SolidMechanicsModel model;
 
         public ObservableCollection<WizardStepViewModelBase> Steps { get; private set; }
 
@@ -23,29 +21,26 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// </summary>
         public SetupViewModel()
         {
-
-            if (isRect)
-            {
-                SolidMechanicsModel2D m = new SolidMechanicsModel2D(new Rectangle(0, 0));
-                Steps = getSteps2D(m);
-                model = m;
-            }
-            else
-            {
-                model = new SolidMechanicsModel(new CylindricalPlate(0, 0));
-                Steps = getSteps(model);
-            }
-            
-            activeStep = Steps[0];
-            activeStep.IsCurrent = true;
-
             MoveNextCommand = new RelayCommand(MoveNext, CanMoveNext);
             MovePreviousCommand = new RelayCommand(MovePrevious, CanMovePrevious);
             SaveCommand = new RelayCommand(Save);
             LoadCommand = new RelayCommand(Load);
+
+            InitializeSteps();
         }
 
-        private ObservableCollection<WizardStepViewModelBase> getSteps(SolidMechanicsModel m)
+        public void InitializeSteps() 
+        {
+            model = createModel();
+            Steps = getSteps(model);
+            activeStep = Steps[0];
+            activeStep.IsCurrent = true;
+        }
+
+        protected abstract SolidMechanicsModel createModel();
+        protected abstract ObservableCollection<WizardStepViewModelBase> getSteps(SolidMechanicsModel m);
+
+        /*private ObservableCollection<WizardStepViewModelBase> getSteps(SolidMechanicsModel m)
         {
             ObservableCollection<WizardStepViewModelBase> steps = new ObservableCollection<WizardStepViewModelBase>();
 
@@ -75,7 +70,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
             steps.Add(new Solve2DStepViewModel(m));
 
             return steps;
-        }
+        }*/
 
         /// <summary>
         /// The <see cref="ActiveStep" /> property's name.

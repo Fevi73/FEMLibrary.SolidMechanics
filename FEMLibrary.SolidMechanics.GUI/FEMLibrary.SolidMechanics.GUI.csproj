@@ -93,6 +93,10 @@
     <Compile Include="Models\SolidMechanicsModel.cs" />
     <Compile Include="Models\ResultItem.cs" />
     <Compile Include="Models\SolidMechanicsModel2D.cs" />
+    <Compile Include="SelectionWindow.xaml.cs">
+      <DependentUpon>SelectionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\RectangleSetupViewModel.cs" />
     <Compile Include="ViewModel\Steps\BoundarySettingsStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\CylindricalShapeStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\InitialSettingsStepViewModel.cs" />
@@ -140,6 +144,10 @@
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SelectionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Skins\MainSkin.xaml">
       <SubType>Designer</SubType>
