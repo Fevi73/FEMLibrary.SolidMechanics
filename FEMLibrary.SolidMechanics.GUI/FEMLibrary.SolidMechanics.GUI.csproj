@@ -87,6 +87,7 @@
     <Compile Include="Controls\DrawResultControl.xaml.cs">
       <DependentUpon>DrawResultControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\IWindowService.cs" />
     <Compile Include="Controls\ShapeDrawingCanvas.cs" />
     <Compile Include="Converters\BoundaryConditionTypeToVisibilityConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
