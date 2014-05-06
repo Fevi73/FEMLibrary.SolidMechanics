@@ -60,6 +60,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
     public class ViewModelLocator
     {
         private static SetupViewModel setup;
+        
 
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.
@@ -68,7 +69,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         {
             IKernel kernel = new StandardKernel();
             kernel.Bind<ILogger>().To<Logger>();
-            CreateSetup();
+            CreateSelector();
         }
 
         /// <summary>

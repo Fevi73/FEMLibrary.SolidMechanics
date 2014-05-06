@@ -8,8 +8,7 @@
         xmlns:conv="clr-namespace:FEMLibrary.SolidMechanics.GUI.Converters"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="Fem Solver for Solid Mechanics"
-        DataContext="{Binding Source={x:Static vm:ViewModelLocator.SetupStatic}}">
+        Title="Fem Solver for Solid Mechanics">
     
     <Window.Resources>
         <ResourceDictionary>
@@ -55,7 +54,7 @@
             <Button Grid.Column="1" Grid.Row="2" Margin="5" Command="{Binding MoveNextCommand}">Next</Button>
         </Grid>
         <ContentControl Grid.Column="1" Content="{Binding ActiveStep, UpdateSourceTrigger=PropertyChanged}"></ContentControl>
-        <Border Grid.Column="2" BorderThickness="1,0,0,0" BorderBrush="DarkGray" >
+        <!--<Border Grid.Column="2" BorderThickness="1,0,0,0" BorderBrush="DarkGray" >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"></RowDefinition>
@@ -64,6 +63,6 @@
                 <ctrls:ShapeDrawingCanvas Background="White" Shapes="{Binding Path=ActiveStep.Figures}" Zoom="{Binding Value, ElementName=Zoomer}"></ctrls:ShapeDrawingCanvas>
                 <Slider Grid.Row="2" x:Name="Zoomer" HorizontalAlignment="Stretch" Minimum="100" Maximum="5000" Margin="5" ></Slider>
             </Grid>
-        </Border>
+        </Border>-->
     </Grid>
 </Window>

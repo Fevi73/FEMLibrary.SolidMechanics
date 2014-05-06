@@ -96,7 +96,9 @@
     <Compile Include="SelectionWindow.xaml.cs">
       <DependentUpon>SelectionWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\RectangleSetupViewModel.cs" />
+    <Compile Include="ViewModel\SelectorViewModel.cs" />
+    <Compile Include="ViewModel\Setup\CylindricalPlateSetupViewModel.cs" />
+    <Compile Include="ViewModel\Setup\RectangleSetupViewModel.cs" />
     <Compile Include="ViewModel\Steps\BoundarySettingsStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\CylindricalShapeStepViewModel.cs" />
     <Compile Include="ViewModel\Steps\InitialSettingsStepViewModel.cs" />
@@ -213,7 +215,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="ViewModel\SetupViewModel.cs" />
+    <Compile Include="ViewModel\Setup\SetupViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

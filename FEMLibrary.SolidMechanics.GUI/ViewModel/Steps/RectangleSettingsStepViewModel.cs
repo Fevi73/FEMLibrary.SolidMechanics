@@ -11,7 +11,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 {
     public class RectangleMeshSettingsStepViewModel : WizardStepViewModelBase
     {
-        public RectangleMeshSettingsStepViewModel(SolidMechanicsModel2D model)
+        public RectangleMeshSettingsStepViewModel(SolidMechanicsModel model)
             : base("Mesh Settings", model)
         { }
 
