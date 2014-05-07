@@ -14,7 +14,6 @@ namespace FEMLibrary.SolidMechanics.GUI
         public MainWindow()
         {
             InitializeComponent();
-            Closing += (s, e) => ViewModelLocator.Cleanup();
         }
     }
 }

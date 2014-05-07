@@ -9,24 +9,30 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 {
     public class SelectorViewModel : ViewModelBase
     {
-        private void showMainWindow(SetupViewModel viewModel)
+        public SelectorViewModel() 
+        {
+            ShowCylindricalPlateSolverCommand = new RelayCommand(ShowCylindricalPlateSolver);
+            ShowRectanglePlateSolverCommand = new RelayCommand(ShowRectanglePlateSolver);
+        }
+        private void showMainWindow(SetupViewModel viewModel) 
+        {
+            MainWindow window = new MainWindow();
+            window.DataContext = viewModel;
+            window.Show();
+        }
 
         public RelayCommand ShowCylindricalPlateSolverCommand { get; private set; }
 
         public void ShowCylindricalPlateSolver()
         {
-            MainWindow window = new MainWindow();
-            window.DataContext = new CylindricalPlateSetupViewModel();
-            window.Show();
+            showMainWindow(new CylindricalPlateSetupViewModel());
         }
 
         public RelayCommand ShowRectanglePlateSolverCommand { get; private set; }
 
         public void ShowRectanglePlateSolver()
         {
-            MainWindow window = new MainWindow();
-            window.DataContext = new RectangleSetupViewModel();
-            window.Show();
+            showMainWindow(new RectangleSetupViewModel());
         }
     }
 }

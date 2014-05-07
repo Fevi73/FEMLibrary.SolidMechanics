@@ -59,7 +59,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
     /// </summary>
     public class ViewModelLocator
     {
-        private static SetupViewModel setup;
+        private static SelectorViewModel selector;
         
 
         /// <summary>
@@ -75,16 +75,16 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// <summary>
         /// Gets the Main property.
         /// </summary>
-        public static SetupViewModel SetupStatic
+        public static SelectorViewModel SelectorStatic
         {
             get
             {
-                if (setup == null)
+                if (selector == null)
                 {
-                    CreateSetup();
+                    CreateSelector();
                 }
 
-                return setup;
+                return selector;
             }
         }
 
@@ -94,22 +94,22 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
             "CA1822:MarkMembersAsStatic",
             Justification = "This non-static member is needed for data binding purposes.")]
-        public SetupViewModel Setup
+        public SelectorViewModel Selector
         {
             get
             {
-                return SetupStatic;
+                return SelectorStatic;
             }
         }
 
         /// <summary>
         /// Provides a deterministic way to create the Main property.
         /// </summary>
-        public static void CreateSetup()
+        public static void CreateSelector()
         {
-            if (setup == null)
+            if (selector == null)
             {
-                setup = new SetupViewModel();
+                selector = new SelectorViewModel();
             }
         }
 
@@ -120,8 +120,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// </summary>
         public static void ClearMain()
         {
-            setup.Cleanup();
-            setup = null;
+            selector.Cleanup();
+            selector = null;
         }
 
         /// <summary>
