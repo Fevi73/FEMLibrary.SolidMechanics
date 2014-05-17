@@ -33,4 +33,34 @@
     <DataTemplate DataType="{x:Type steps:InitialSettingsStepViewModel}">
         <views:InitialSettingsStepView/>
     </DataTemplate>
+
+    <SolidColorBrush x:Key="ItemBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="SelectedItemBrush" Color="LightBlue" />
+    <SolidColorBrush x:Key="HoverItemBrush" Color="Azure" />
+    <Style x:Key="RoundedItem" TargetType="ListBoxItem">
+        <Setter Property="IsSelected"
+                    Value="{Binding IsCurrent, Mode=TwoWay}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border Name="ItemBorder" BorderBrush="Black" BorderThickness="1" Padding="5" Background="{StaticResource ItemBrush}">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{StaticResource SelectedItemBrush}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsSelected" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{StaticResource HoverItemBrush}" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

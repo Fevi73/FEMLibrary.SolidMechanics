@@ -17,15 +17,16 @@
                 <ResourceDictionary Source="Skins/MainSkin.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate x:Key="StepName">
-                <Border Name="border" Padding="5" Background="LightGray" BorderBrush="Black" BorderThickness="0,0,0,1" HorizontalAlignment="Stretch">
+                <!--<Border Name="border" Padding="5" Background="LightGray" BorderBrush="Black" BorderThickness="0,0,0,1" HorizontalAlignment="Stretch">-->
                     <TextBlock Name="txtDisplayName" FontSize="12" Text="{Binding DisplayName}"/>
-                </Border>
+                <!--</Border>
                 <DataTemplate.Triggers>
                     <DataTrigger Binding="{Binding IsCurrent}" Value="true">
                         <Setter TargetName="txtDisplayName" Property="FontWeight" Value="Bold"/>
                         <Setter TargetName="border" Property="Background" Value="White"/>
                     </DataTrigger>
                 </DataTemplate.Triggers>
+                -->
             </DataTemplate>
             <conv:DebugConverter x:Key="Conv"></conv:DebugConverter>
         </ResourceDictionary>
@@ -47,7 +48,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ListBox Grid.ColumnSpan="3" ItemsSource="{Binding Steps}" ItemTemplate="{StaticResource StepName}"></ListBox>
+            <ListBox Grid.ColumnSpan="3" ItemsSource="{Binding Steps}" ItemContainerStyle="{StaticResource RoundedItem}" ItemTemplate="{StaticResource StepName}"></ListBox>
             
             <Button Grid.Column="0" Grid.Row="1" Margin="5" Command="{Binding SaveCommand}">Save</Button>
             <Button Grid.Column="1" Grid.Row="1" Margin="5" Command="{Binding LoadCommand}">Load</Button>

@@ -33,8 +33,19 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         {
             model = createModel();
             Steps = getSteps(model);
-            activeStep = Steps[0];
-            activeStep.IsCurrent = true;
+            SelectStep(Steps[0]);
+            foreach (WizardStepViewModelBase step in Steps) {
+                step.PropertyChanged += step_PropertyChanged;
+            }
+        }
+
+        void step_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == WizardStepViewModelBase.IsCurrentPropertyName) 
+            {
+                ActiveStep.IsCurrent = false;
+                ActiveStep = (WizardStepViewModelBase)sender;
+            }
         }
 
         protected abstract SolidMechanicsModel createModel();
