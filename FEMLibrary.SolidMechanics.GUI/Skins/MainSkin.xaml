@@ -49,6 +49,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="ItemBorder" Property="Background" Value="{StaticResource SelectedItemBrush}" />
+                            <Setter Property="FontWeight" Value="Bold" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
