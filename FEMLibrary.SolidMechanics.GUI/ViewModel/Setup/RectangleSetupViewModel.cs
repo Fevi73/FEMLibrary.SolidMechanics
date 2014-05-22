@@ -11,6 +11,11 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 {
     public class RectangleSetupViewModel : SetupViewModel
     {
+        public static readonly string RectangleSetupTitle = "Rectangle plate solver";
+
+        public RectangleSetupViewModel() :base(RectangleSetupTitle)
+        { }
+
         protected override SolidMechanicsModel createModel()
         {
             return new SolidMechanicsModel2D();

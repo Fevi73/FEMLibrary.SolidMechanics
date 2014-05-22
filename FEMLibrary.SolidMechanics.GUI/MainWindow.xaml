@@ -8,7 +8,7 @@
         xmlns:conv="clr-namespace:FEMLibrary.SolidMechanics.GUI.Converters"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="Fem Solver for Solid Mechanics"
+        Title="{Binding Path=Title}"
         >
     
     <Window.Resources>

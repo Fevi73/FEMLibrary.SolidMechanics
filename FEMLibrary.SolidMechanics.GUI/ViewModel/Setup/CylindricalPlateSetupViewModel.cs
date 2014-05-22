@@ -11,6 +11,12 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 {
     public class CylindricalPlateSetupViewModel : SetupViewModel
     {
+        public static readonly string CylindricalPlateSetupTitle = "Cylindrical plate solver";
+
+        public CylindricalPlateSetupViewModel()
+            : base(CylindricalPlateSetupTitle)
+        { }
+
         protected override SolidMechanicsModel createModel()
         {
             return new SolidMechanicsModel();

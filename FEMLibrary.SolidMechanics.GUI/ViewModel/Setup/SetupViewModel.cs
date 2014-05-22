@@ -19,12 +19,13 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public SetupViewModel()
+        public SetupViewModel(string title)
         {
             MoveNextCommand = new RelayCommand(MoveNext, CanMoveNext);
             MovePreviousCommand = new RelayCommand(MovePrevious, CanMovePrevious);
             SaveCommand = new RelayCommand(Save);
             LoadCommand = new RelayCommand(Load);
+            Title = title;
 
             InitializeSteps();
         }
@@ -50,6 +51,34 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 
         protected abstract SolidMechanicsModel createModel();
         protected abstract ObservableCollection<WizardStepViewModelBase> getSteps(SolidMechanicsModel m);
+
+        /// <summary>
+        /// The <see cref="Title" /> property's name.
+        /// </summary>
+        public const string TitlePropertyName = "Title";
+
+        private string title = null;
+
+
+        public string Title
+        {
+            get
+            {
+                return title;
+            }
+
+            set
+            {
+                if (title == value)
+                {
+                    return;
+                }
+
+                title = value;
+                // Update bindings, no broadcast
+                RaisePropertyChanged(TitlePropertyName);
+            }
+        }
 
         /// <summary>
         /// The <see cref="ActiveStep" /> property's name.
@@ -125,17 +154,32 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 
         public void Save()
         {
-            model.Save(FILENAME);
+            Microsoft.Win32.SaveFileDialog saveDialog = new Microsoft.Win32.SaveFileDialog();
+            //saveDialog.InitialDirectory = "/";
+            saveDialog.FileName = "model"; 
+            saveDialog.DefaultExt = ".dat"; // Default file extension
+            saveDialog.Filter = "Models (.dat)|*.dat"; // Filter files by extension 
+            if (saveDialog.ShowDialog() == true)
+            {
+                model.Save(saveDialog.FileName);
+            }
         }
 
         public RelayCommand LoadCommand { get; private set; }
 
         public void Load()
         {
-            SolidMechanicsModel model = SolidMechanicsModel.Load(FILENAME);
-            foreach (WizardStepViewModelBase step in Steps) 
+            Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog();
+            //openDialog.InitialDirectory = "/";
+            openDialog.DefaultExt = ".dat"; // Default file extension
+            openDialog.Filter = "Models (.dat)|*.dat"; // Filter files by extension 
+            if (openDialog.ShowDialog() == true)
             {
-                step.RefreshProperties(model);
+                SolidMechanicsModel model = SolidMechanicsModel.Load(openDialog.FileName);
+                foreach (WizardStepViewModelBase step in Steps)
+                {
+                    step.RefreshProperties(model);
+                }
             }
         }
 
