@@ -31,9 +31,19 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
             steps.Add(new BoundarySettingsStepViewModel(m));
             steps.Add(new InitialSettingsStepViewModel(m));
             steps.Add(new RectangleMeshSettingsStepViewModel(model));
-            steps.Add(new SolveStepViewModel(m));
+            steps.Add(new Solve2DStepViewModel(m));
 
             return steps;
+        }
+
+        protected override string getFileExtensionForModel()
+        {
+            return ".rpm";
+        }
+
+        protected override string getFileFilterForModel()
+        {
+            return "Rectangular plate models (.rpm)|*.rpm";
         }
     }
 }

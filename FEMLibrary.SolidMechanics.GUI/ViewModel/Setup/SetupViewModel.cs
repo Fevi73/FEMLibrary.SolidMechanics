@@ -155,10 +155,9 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         public void Save()
         {
             Microsoft.Win32.SaveFileDialog saveDialog = new Microsoft.Win32.SaveFileDialog();
-            //saveDialog.InitialDirectory = "/";
-            saveDialog.FileName = "model"; 
-            saveDialog.DefaultExt = ".dat"; // Default file extension
-            saveDialog.Filter = "Models (.dat)|*.dat"; // Filter files by extension 
+            saveDialog.FileName = "model";
+            saveDialog.DefaultExt = getFileExtensionForModel();
+            saveDialog.Filter = getFileFilterForModel();
             if (saveDialog.ShowDialog() == true)
             {
                 model.Save(saveDialog.FileName);
@@ -170,9 +169,8 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
         public void Load()
         {
             Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog();
-            //openDialog.InitialDirectory = "/";
-            openDialog.DefaultExt = ".dat"; // Default file extension
-            openDialog.Filter = "Models (.dat)|*.dat"; // Filter files by extension 
+            openDialog.DefaultExt = getFileExtensionForModel();
+            openDialog.Filter = getFileFilterForModel();
             if (openDialog.ShowDialog() == true)
             {
                 SolidMechanicsModel model = SolidMechanicsModel.Load(openDialog.FileName);
@@ -182,6 +180,9 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
                 }
             }
         }
+
+        protected abstract string getFileExtensionForModel();
+        protected abstract string getFileFilterForModel();
 
         ////public override void Cleanup()
         ////{

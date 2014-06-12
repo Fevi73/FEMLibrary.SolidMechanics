@@ -19,7 +19,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
 
         protected override SolidMechanicsModel createModel()
         {
-            return new SolidMechanicsModel();
+            return new SolidMechanicsModel(new CylindricalPlate());
         }
 
         protected override ObservableCollection<WizardStepViewModelBase> getSteps(SolidMechanicsModel m)
@@ -35,6 +35,16 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel
             steps.Add(new SolveStepViewModel(m));
 
             return steps;
+        }
+
+        protected override string getFileExtensionForModel()
+        {
+            return ".cpm";
+        }
+
+        protected override string getFileFilterForModel()
+        {
+            return "Cylindrical plate models (.cpm)|*.cpm";
         }
     }
 }
