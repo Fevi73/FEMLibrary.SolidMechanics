@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
@@ -211,35 +212,41 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                 if (smm != null)
                 {
                     RectangularMesh mesh = new RectangularMesh(rectangle, smm.VerticalElements, smm.HorizontalElements);
+                    pointsForGrid = mesh.GetPointsForResult();
+                    IEnumerable<INumericalResult> results = null;
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
+                    Task taskSolver = Task.Factory.StartNew(() =>
+                    {
+                        //Solver solver = new FreeVibrationsLinearSolver(solidMechanicsModel.Model, mesh, error, solidMechanicsModel.MaxAmplitude);
 
-                    //Solver solver = new FreeVibrationsLinearSolver(solidMechanicsModel.Model, mesh, error, solidMechanicsModel.MaxAmplitude);
+                        Solver solver = new FreeVibrationsLinearSolver(smm.Model, mesh, error, smm.MaxAmplitude);
 
-                    Solver solver = new FreeVibrationsLinearSolver(smm.Model, mesh, error, smm.MaxAmplitude);
+                        /*Solver initSolver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
+                        IEnumerable<INumericalResult> initResults = initSolver.Solve(1);
+                        EigenValuesNumericalResult res = initResults.First() as EigenValuesNumericalResult;*/
 
-                    /*Solver initSolver = new FreeVibrationsLinearSolver(_solidMechanicsModel.Model, mesh, _error);
-                    IEnumerable<INumericalResult> initResults = initSolver.Solve(1);
-                    EigenValuesNumericalResult res = initResults.First() as EigenValuesNumericalResult;*/
+                        //Solver solver = new FreeVibrationsNonLinearSolver2(_solidMechanicsModel.Model, mesh, _error, res.U, 2, 50);
 
-                    //Solver solver = new FreeVibrationsNonLinearSolver2(_solidMechanicsModel.Model, mesh, _error, res.U, 2, 50);
+                        //Solver solver = new NewmarkVibrationNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 5, 50);
 
-                    //Solver solver = new NewmarkVibrationNonLinearSolver(_solidMechanicsModel.Model, mesh, _error, res.U, 5, 50);
+                        //Solver solver = new StationaryNonlinear2DSolver(_solidMechanicsModel.Model, mesh, _error, 20);
 
-                    //Solver solver = new StationaryNonlinear2DSolver(_solidMechanicsModel.Model, mesh, _error, 20);
+                        //IResult analiticalResult = new AnaliticalResultRectangleWithOneSideFixed(_solidMechanicsModel.Model);
 
-                    //IResult analiticalResult = new AnaliticalResultRectangleWithOneSideFixed(_solidMechanicsModel.Model);
-
-                    IEnumerable<INumericalResult> results = solver.Solve(maxResults);
-
+                        results = solver.Solve(maxResults);
+                    });
                     sw.Stop();
                     TimeElapsed = sw.Elapsed;
-                    pointsForGrid = mesh.GetPointsForResult();
-                    Results.Clear();
-                    foreach (INumericalResult result in results)
+                    Task.WaitAll(taskSolver);
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => 
                     {
-                        Results.Add(result);
-                    }
+                        Results.Clear();
+                        foreach (INumericalResult result in results)
+                        {
+                            Results.Add(result);
+                        }
+                    }));
                 }
             }
         }
@@ -253,17 +260,17 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
             if (result != null)
             {
-                FillResultGrid(null, result, points);
-                IEnumerable<IFiniteElement> elements = result.Elements;
+                fillResultGrid(null, result, points);
+                /*IEnumerable<IFiniteElement> elements = result.Elements;
 
                 drawingThread = new Thread(delegate()
                 {
                     DrawResult(result, elements);
                 });
-                drawingThread.Start();
+                drawingThread.Start();*/
             }
         }
-
+        /*
         private void DrawResult(IResult numericalResult, IEnumerable<IFiniteElement> elements)
         {
             double time = 0;
@@ -315,9 +322,9 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
             return rectangle;
         }
 
-        
+        */
 
-        private void FillResultGrid(IResult analiticalResult, IResult numericalResult, IEnumerable<FEMLibrary.SolidMechanics.Geometry.Point> points)
+        private void fillResultGrid(IResult analiticalResult, IResult numericalResult, IEnumerable<FEMLibrary.SolidMechanics.Geometry.Point> points)
         {
             GridResults.Clear();
             foreach (FEMLibrary.SolidMechanics.Geometry.Point point in points)
