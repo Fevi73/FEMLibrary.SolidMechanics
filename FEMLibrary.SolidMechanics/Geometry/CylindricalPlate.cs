@@ -24,12 +24,12 @@ namespace FEMLibrary.SolidMechanics.Geometry
         }
 
         public CylindricalPlate(double height, double width, double curvature)
-            : this(0, 0, height, width, curvature)
+            : this(0, -height/2, height, width, curvature)
         {
         }
 
         public CylindricalPlate(double height, double width)
-            : this(0, 0, height, width, 0)
+            : this(0, -height / 2, height, width, 0)
         {
         }
 

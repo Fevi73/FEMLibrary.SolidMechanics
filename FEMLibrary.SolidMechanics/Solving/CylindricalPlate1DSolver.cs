@@ -113,8 +113,8 @@ namespace FEMLibrary.SolidMechanics.Solving
         protected Matrix GetLocalMassMatrix(IFiniteElement element)
         {
             elementCurrent = element;
-
-            Matrix localMassMatrix = _model.Material.Rho * Integration.GaussianIntegrationMatrix(LocalMassMatrixFunction);
+            //_model.Material.Rho * 
+            Matrix localMassMatrix = Integration.GaussianIntegrationMatrix(LocalMassMatrixFunction);
 
             return localMassMatrix;
         }
@@ -123,7 +123,11 @@ namespace FEMLibrary.SolidMechanics.Solving
         {
             Matrix baseFunctionsMatrix = GetLocalBaseFunctionsMatrix(eta);
 
-            return baseFunctionsMatrix * Matrix.Transpose(baseFunctionsMatrix) * ((elementCurrent[1].Point.X - elementCurrent[0].Point.X) / 2);
+            CylindricalPlate plate = _model.Shape as CylindricalPlate;
+
+            Matrix a = GetAlfa3BaseFunctionsMatrix(plate.Height);
+
+            return Matrix.Transpose(baseFunctionsMatrix) * a * baseFunctionsMatrix * ((elementCurrent[1].Point.X - elementCurrent[0].Point.X) / 2);
         }
 
         protected Matrix GetLocalBaseFunctionsMatrix(double eta)
@@ -137,6 +141,17 @@ namespace FEMLibrary.SolidMechanics.Solving
             }
 
             return localDerivativeMatrix;
+        }
+
+        protected Matrix GetAlfa3BaseFunctionsMatrix(double h)
+        {
+            Matrix a = new Matrix(6, 6);
+
+            a[0, 0] = a[0, 2] = a[1, 1] = a[1, 2] = a[2, 0] = a[2, 1] = a[3, 3] = a[3, 5] = a[4, 4] = a[4, 5] = a[5, 3] = a[5, 4] = h / 3;
+            a[0, 1] = a[1, 0] = a[3, 4] = a[4, 3] = h / 6;
+            a[2, 2] = a[5, 5] = 8 * h / 15;
+
+            return a;
         }
 
 
@@ -270,13 +285,24 @@ namespace FEMLibrary.SolidMechanics.Solving
                     FiniteElementNode node = _mesh.GetNodeOnPoint(point);
                     if (node != null)
                     {
-                        for (int i = 0; i < 6; i++)
+                        if (node.Point.Y > point.Y)
+                        {
+                            indecies.Add(6 * node.Index + 1);
+                            indecies.Add(6 * node.Index + 4);
+                            //1
+                        }
+                        else {
+                            indecies.Add(6 * node.Index);
+                            indecies.Add(6 * node.Index + 3);
+                            //0
+                        }
+                        /*for (int i = 0; i < 6; i++)
                         {
                             if (!indecies.Contains(6 * node.Index + i))
                             {
                                 indecies.Add(6 * node.Index + i);
                             }
-                        }
+                        }*/
                     }
                 }
             }
