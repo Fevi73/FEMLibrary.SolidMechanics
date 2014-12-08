@@ -10,13 +10,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 {
-    public class SolveStepViewModel:WizardStepViewModelBase
+    public class SolveStepViewModel : WizardStepViewModelBase
     {
-        public SolveStepViewModel(SolidMechanicsModel model):base("Solve", model)
+        public SolveStepViewModel(SolidMechanicsModel model)
+            :base("Solve", model)
         {
             SolveCommand = new RelayCommand(Solve);
             Results = new ObservableCollection<INumericalResult>();
@@ -187,7 +189,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                     return;
                 }
                 currentResultProperty = value;
-                ShowResult(currentResultProperty, pointsForGrid);
+                showResult(currentResultProperty, pointsForGrid);
                 RaisePropertyChanged(CurrentResultPropertyName);
             }
         }
@@ -204,30 +206,58 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
         public void Solve()
         {
-            CylindricalPlate plate = solidMechanicsModel.Model.Shape as CylindricalPlate;
-            if (plate != null)
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                LinearMesh mesh = new LinearMesh(plate, solidMechanicsModel.HorizontalElements);
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-
-
-                Solver solver = new CylindricalPlate1DSolver(solidMechanicsModel.Model, mesh, error, solidMechanicsModel.MaxAmplitude);
-
-                IEnumerable<INumericalResult> results = solver.Solve(maxResults);
-                
-                sw.Stop();
-                TimeElapsed = sw.Elapsed;
-                pointsForGrid = mesh.GetPointsForResult();
-                Results.Clear();
-                foreach (INumericalResult result in results)
+                CylindricalPlate plate = solidMechanicsModel.Model.Shape as CylindricalPlate;
+                if (plate != null)
                 {
-                    Results.Add(result);
+                    LinearMesh mesh = new LinearMesh(plate, solidMechanicsModel.HorizontalElements);
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+
+                    Solver solver = new CylindricalPlate1DSolver(solidMechanicsModel.Model, mesh, error, solidMechanicsModel.MaxAmplitude);
+                    IEnumerable<INumericalResult> results = solver.Solve(maxResults);
+
+                    sw.Stop();
+                    TimeElapsed = sw.Elapsed;
+
+                    pointsForGrid = mesh.GetPointsForResult();
+                    Results.Clear();
+                    foreach (INumericalResult result in results)
+                    {
+                        Results.Add(result);
+                    }
                 }
+            }));
+        }
+
+        private void fillResultGrid(IResult analiticalResult, IResult numericalResult, IEnumerable<FEMLibrary.SolidMechanics.Geometry.Point> points)
+        {
+            GridResults.Clear();
+            foreach (FEMLibrary.SolidMechanics.Geometry.Point point in points)
+            {
+                ResultItem resultItem = new ResultItem();
+                resultItem.Alfa1 = point.X;
+                //Point point = new Point(node.Point.X, 0);//(-1)*(rectangle.Height/2));
+                MatrixLibrary.Vector numericalResultAtPoint = numericalResult.GetResultAtPoint(point, 0);
+                //MatrixLibrary.Vector analiticalResultAtPoint = analiticalResult.GetResultAtPoint(point, 0);
+
+                if (numericalResultAtPoint != null)
+                {
+                    resultItem.U1Numeric = numericalResultAtPoint[0];
+                    resultItem.U3Numeric = numericalResultAtPoint[2];
+                }
+                /*if (analiticalResultAtPoint != null)
+                {
+                    resultItem.U1Analitical = analiticalResultAtPoint[0];
+                    resultItem.U3Analitical = analiticalResultAtPoint[2];
+                }*/
+
+                GridResults.Add(resultItem);
             }
         }
 
-        private void ShowResult(INumericalResult result, IEnumerable<FEMLibrary.SolidMechanics.Geometry.Point> points)
+        private void showResult(INumericalResult result, IEnumerable<FEMLibrary.SolidMechanics.Geometry.Point> points)
         {
             if (drawingThread != null)
             {
@@ -236,31 +266,32 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
 
             if (result != null)
             {
-                FillResultGrid(null, result, points);
-                IEnumerable<IFiniteElement> elements = result.Elements;
+                fillResultGrid(null, result, points);
+                
+                /*IEnumerable<IFiniteElement> elements = result.Elements;
 
-                /*drawingThread = new Thread(delegate()
+                drawingThread = new Thread(delegate()
                 {
-                    DrawResult(result, elements);
+                    drawResult(result, elements);
                 });
                 drawingThread.Start();
                  */
             }
         }
-
-        private void DrawResult(IResult numericalResult, IEnumerable<IFiniteElement> elements)
+        /*
+        private void drawResult(IResult numericalResult, IEnumerable<IFiniteElement> elements)
         {
             double time = 0;
-            FillResultPicture(numericalResult, elements, time);
+            fillResultPicture(numericalResult, elements, time);
             while (true)
             {
-                FillResultPicture(numericalResult, elements, time);
+                fillResultPicture(numericalResult, elements, time);
                 time+=0.01;
                 Thread.Sleep(50);
             }
         }
 
-        private void FillResultPicture(IResult numericalResult, IEnumerable<IFiniteElement> elements, double t)
+        private void fillResultPicture(IResult numericalResult, IEnumerable<IFiniteElement> elements, double t)
         {
             List<Shape> shapes = new List<Shape>();
             foreach (FiniteElementRectangle fe in elements) 
@@ -299,33 +330,9 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
             return rectangle;
         }
 
+        */
+
         
-
-        private void FillResultGrid(IResult analiticalResult, IResult numericalResult, IEnumerable<FEMLibrary.SolidMechanics.Geometry.Point> points)
-        {
-            GridResults.Clear();
-            foreach (FEMLibrary.SolidMechanics.Geometry.Point point in points)
-            {
-                ResultItem resultItem = new ResultItem();
-                resultItem.Alfa1 = point.X;
-                //Point point = new Point(node.Point.X, 0);//(-1)*(rectangle.Height/2));
-                MatrixLibrary.Vector numericalResultAtPoint = numericalResult.GetResultAtPoint(point, 0);
-                //MatrixLibrary.Vector analiticalResultAtPoint = analiticalResult.GetResultAtPoint(point, 0);
-
-                if (numericalResultAtPoint != null)
-                {
-                    resultItem.U1Numeric = numericalResultAtPoint[0];
-                    resultItem.U3Numeric = numericalResultAtPoint[2];
-                }
-                /*if (analiticalResultAtPoint != null)
-                {
-                    resultItem.U1Analitical = analiticalResultAtPoint[0];
-                    resultItem.U3Analitical = analiticalResultAtPoint[2];
-                }*/
-
-                GridResults.Add(resultItem);
-            }
-        }
 
         public RelayCommand SolveCommand { get; private set; }
 
