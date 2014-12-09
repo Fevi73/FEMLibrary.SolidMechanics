@@ -77,7 +77,7 @@ namespace FEMLibrary.SolidMechanics.Solving
         {
             elementCurrent = element;
 
-            Matrix localMassMatrix = _model.Material.Rho * Integration.GaussianIntegrationMatrix(LocalMassMatrixFunction);
+            Matrix localMassMatrix = Integration.GaussianIntegrationMatrix(LocalMassMatrixFunction);
 
             return localMassMatrix;
         }
@@ -385,9 +385,9 @@ namespace FEMLibrary.SolidMechanics.Solving
             for (int i = 0; i < lambdas.Length; i++)
             {
                 Vector eigenVector = eigenVectors[i];
-                eigenVector = addStaticPoints(eigenVector, indeciesToDelete);
-                eigenVector = applyAmplitudeToVector(eigenVector);
-                EigenValuesNumericalResult result = new EigenValuesNumericalResult(_mesh.Elements, eigenVector, Math.Sqrt(lambdas[i]));///_model.Material.Rho));
+                //eigenVector = addStaticPoints(eigenVector, indeciesToDelete);
+                //eigenVector = applyAmplitudeToVector(eigenVector);
+                EigenValuesNumericalResult result = new EigenValuesNumericalResult(_mesh.Elements, eigenVector, Math.Sqrt(lambdas[i] / _model.Material.Rho));
                 results.Add(result);
             }
 

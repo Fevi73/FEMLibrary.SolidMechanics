@@ -289,20 +289,12 @@ namespace FEMLibrary.SolidMechanics.Solving
                         {
                             indecies.Add(6 * node.Index + 1);
                             indecies.Add(6 * node.Index + 4);
-                            //1
                         }
-                        else {
+                        else
+                        {
                             indecies.Add(6 * node.Index);
                             indecies.Add(6 * node.Index + 3);
-                            //0
                         }
-                        /*for (int i = 0; i < 6; i++)
-                        {
-                            if (!indecies.Contains(6 * node.Index + i))
-                            {
-                                indecies.Add(6 * node.Index + i);
-                            }
-                        }*/
                     }
                 }
             }

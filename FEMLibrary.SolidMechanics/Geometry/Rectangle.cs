@@ -38,6 +38,11 @@ namespace FEMLibrary.SolidMechanics.Geometry
             _rightTopPoint.Y = _leftBottomPoint.Y + _height;
         }
 
+        public void SetBottomY(double y) {
+            _leftBottomPoint.Y = y;
+            _rightBottomPoint.Y = y;
+        }
+
         private Point _leftBottomPoint;
         private Point _leftTopPoint;
         private Point _rightTopPoint;

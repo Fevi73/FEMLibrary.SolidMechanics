@@ -95,6 +95,7 @@ namespace FEMLibrary.SolidMechanics.GUI.ViewModel.Steps
                         return;
                     }
 
+                    rectangle.SetBottomY(-value / 2);
                     rectangle.Height = value;
 
                     // Update bindings, no broadcast

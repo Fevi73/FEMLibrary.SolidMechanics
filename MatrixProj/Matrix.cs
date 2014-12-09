@@ -615,16 +615,16 @@ namespace MatrixLibrary
 
         public override string ToString()
         {
-            string str_matrix = "";
+            string str_matrix = "[";
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < m; j++)
                 {
-                    str_matrix += matrix[i, j].ToString("00.000") + "   ";
+                    str_matrix += matrix[i, j].ToString("00.00000000") + " ";
                 }
-                str_matrix += "\r\n";
+                str_matrix += ";\r\n";
             }
-            return str_matrix; 
+            return str_matrix + "]"; 
         }
         /*
         public override bool Equals(object obj)
