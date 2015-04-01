@@ -52,13 +52,13 @@ namespace MatrixLibrary
         {
             get
             {
-                if (((0 <= i) && (i <= n)) && ((0 <= j) && (j <= m)))
+                if (((0 <= i) && (i < n)) && ((0 <= j) && (j < m)))
                     return matrix[i, j];
                 else throw new IndexOutOfRangeException();
             }
             set
             {
-                if (((0 <= i) && (i <= n)) && ((0 <= j) && (j <= m)))
+                if (((0 <= i) && (i < n)) && ((0 <= j) && (j < m)))
                     matrix[i, j] = value;
                 else throw new IndexOutOfRangeException();
             }
@@ -109,15 +109,7 @@ namespace MatrixLibrary
 
         public static Matrix operator *(Matrix m, double d)
         {
-            Matrix res = new Matrix(m);
-            for (int i = 0; i < m.CountRows; i++)
-            {
-                for (int j = 0; j < m.CountColumns; j++)
-                {
-                    res[i, j] *= d;
-                }
-            }
-            return res;
+            return d * m;
         }
 
         public static Matrix operator +(Matrix m1, Matrix m2)
@@ -626,20 +618,6 @@ namespace MatrixLibrary
             }
             return str_matrix + "]"; 
         }
-        /*
-        public override bool Equals(object obj)
-        {
-            bool isEqual = false;
-            Vector vector = obj as Vector;
-            if (vector != null)
-            {
-                isEqual = true;
-                
-            }
-            return isEqual;
-        }*/
-
-
     }
 
 }
